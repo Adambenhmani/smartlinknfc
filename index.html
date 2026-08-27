@@ -37,7 +37,6 @@ function getSocialIcon(label){
     return icons[key] || "fa-solid fa-link";
 }
 </script>
-</script>
 
 <style>
 
@@ -659,7 +658,9 @@ const pathParts =
 
 const slugFromPath =
     pathParts.length >= 2 &&
-    pathParts[0].toLowerCase() === "smartlinknfc"
+    pathParts[0].toLowerCase() === "smartlinknfc" &&
+    pathParts[1].toLowerCase() !== "index.html" &&
+    pathParts[1].toLowerCase() !== "admin.html"
         ? decodeURIComponent(pathParts[1])
         : null;
 
