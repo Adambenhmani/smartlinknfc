@@ -808,7 +808,7 @@ body {
             <!-- PROFILE GALLERY -->
             <div class="file-box full">
 
-                <label>🖼️ Photos Gallery (up to 4 photos)</label>
+                <label>🖼️ Photos Gallery (up to 10 photos)</label>
 
                 <input
                     type="file"
@@ -817,7 +817,8 @@ body {
                     multiple>
 
                 <small style="display:block;margin-top:6px;color:#777;">
-                    Select up to 4 photos. They will appear as 2 × 2.
+                    Select up to 10 photos. They will appear as 2 × 2.
+                    When editing a client, new photos are added to the existing gallery.
                 </small>
 
                 <div
@@ -1446,7 +1447,7 @@ galleryFiles.addEventListener(
 
         const files =
             Array.from(galleryFiles.files)
-                .slice(0,4);
+                .slice(0,10);
 
         files.forEach(function(file){
 
@@ -1488,7 +1489,7 @@ galleryFiles.addEventListener(
         if(galleryFiles.files.length > 4){
 
             showMessage(
-                "Only the first 4 gallery photos will be used.",
+                "Only the first 10 gallery photos will be used.",
                 "error"
             );
 
@@ -1779,13 +1780,20 @@ clientForm.addEventListener(
 
                 const selectedGalleryFiles =
                     Array.from(galleryFiles.files)
-                        .slice(0,4);
+                        .slice(0,10);
 
-                const galleryUrls = [];
+                const existingGalleryUrls =
+                    Array.isArray(client.photos)
+                        ? client.photos
+                        : [];
+
+                const galleryUrls =
+                    existingGalleryUrls.slice(0,10);
 
                 for(
                     let i = 0;
-                    i < selectedGalleryFiles.length;
+                    i < selectedGalleryFiles.length &&
+                        galleryUrls.length < 10;
                     i++
                 ){
 
@@ -1801,7 +1809,8 @@ clientForm.addEventListener(
                             selectedGalleryFiles[i],
                             "profile-photos",
                             clientId,
-                            "gallery-" + (i + 1)
+                            "gallery-" +
+                                (galleryUrls.length + 1)
                         );
 
                     if(galleryUrl){
@@ -1811,7 +1820,7 @@ clientForm.addEventListener(
                 }
 
                 client.photos =
-                    galleryUrls;
+                    galleryUrls.slice(0,10);
 
             }
 
@@ -2179,7 +2188,7 @@ function editClient(id){
 
         const existingPhotos =
             Array.isArray(client.photos)
-                ? client.photos.slice(0,4)
+                ? client.photos.slice(0,10)
                 : [];
 
         existingPhotos.forEach(function(url){
