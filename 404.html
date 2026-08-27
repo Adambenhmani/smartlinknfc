@@ -387,6 +387,32 @@ body{
     }
 }
 
+
+/* =====================================================
+   PER-PROFILE THEME COLOR
+===================================================== */
+
+:root{
+    --profile-color:#111111;
+    --profile-color-soft:rgba(17,17,17,.10);
+}
+
+.profile-theme-accent{
+    color:var(--profile-color) !important;
+}
+
+.profile-theme-bg{
+    background:var(--profile-color) !important;
+    color:#fff !important;
+}
+
+
+
+/* Rich custom profile theme */
+.theme-custom-border{
+    border-color:var(--profile-color) !important;
+}
+
 </style>
 
 </head>
@@ -927,6 +953,81 @@ function escapeVCard(value){
         .replace(/,/g, "\\,");
 }
 
+
+function applyProfileTheme(color){
+
+    const safeColor =
+        /^#[0-9a-fA-F]{6}$/.test(
+            String(color || "")
+        )
+            ? String(color)
+            : "#111111";
+
+    document.documentElement.style
+        .setProperty(
+            "--profile-color",
+            safeColor
+        );
+
+    document.documentElement.style
+        .setProperty(
+            "--profile-color-soft",
+            hexToRgba(safeColor, 0.10)
+        );
+
+    document
+        .querySelectorAll(
+            ".theme-primary, .save-contact-button"
+        )
+        .forEach(function(el){
+
+            el.style.backgroundColor =
+                safeColor;
+
+        });
+
+    document
+        .querySelectorAll(
+            ".theme-accent"
+        )
+        .forEach(function(el){
+
+            el.style.color =
+                safeColor;
+
+        });
+}
+
+function hexToRgba(hex, alpha){
+
+    const clean =
+        String(hex)
+            .replace("#","");
+
+    if(clean.length !== 6){
+        return "rgba(17,17,17," + alpha + ")";
+    }
+
+    const r =
+        parseInt(clean.substring(0,2),16);
+
+    const g =
+        parseInt(clean.substring(2,4),16);
+
+    const b =
+        parseInt(clean.substring(4,6),16);
+
+    return (
+        "rgba(" +
+        r + "," +
+        g + "," +
+        b + "," +
+        alpha +
+        ")"
+    );
+}
+
+
 async function loadProfile(){
 
     if(!clientId && !slugFromPath){
@@ -1341,6 +1442,21 @@ function renderProfile(client){
         photosSection.classList.add("hidden");
 
     }
+
+    /* PROFILE THEME */
+    applyProfileTheme(
+        client.theme_color ||
+        client.themeColor ||
+        "#111111"
+    );
+
+    document
+        .querySelectorAll(
+            "h1, h2"
+        )
+        .forEach(function(el){
+            el.classList.add("theme-accent");
+        });
 
     /* SHOW PROFILE */
 
