@@ -648,8 +648,20 @@ const params =
     );
 
 
+// Supports both the old ?id=UUID links and the new /slug links.
 const clientId =
     params.get("id");
+
+const pathParts =
+    window.location.pathname
+        .split("/")
+        .filter(Boolean);
+
+const slugFromPath =
+    pathParts.length >= 2 &&
+    pathParts[0].toLowerCase() === "smartlinknfc"
+        ? decodeURIComponent(pathParts[1])
+        : null;
 
 
 /* =====================================================
@@ -768,7 +780,7 @@ function escapeVCard(value){
 
 async function loadProfile(){
 
-    if(!clientId){
+    if(!clientId && !slugFromPath){
 
         showError();
 
@@ -782,15 +794,30 @@ async function loadProfile(){
     );
 
 
-    const { data, error } =
-        await supabaseClient
-            .from("Clients")
-            .select("*")
-            .eq(
-                "id",
-                clientId
-            )
-            .maybeSingle();
+    let data = null;
+    let error = null;
+
+    if (slugFromPath) {
+        const result =
+            await supabaseClient
+                .from("Clients")
+                .select("*")
+                .eq("slug", slugFromPath)
+                .maybeSingle();
+
+        data = result.data;
+        error = result.error;
+    } else if (clientId) {
+        const result =
+            await supabaseClient
+                .from("Clients")
+                .select("*")
+                .eq("id", clientId)
+                .maybeSingle();
+
+        data = result.data;
+        error = result.error;
+    }
 
 
     console.log(
@@ -1158,20 +1185,32 @@ let currentClient =
 
 async function loadProfileAndSetContact(){
 
-    if(!clientId){
+    if(!clientId && !slugFromPath){
         return;
     }
 
 
-    const { data } =
-        await supabaseClient
-            .from("Clients")
-            .select("*")
-            .eq(
-                "id",
-                clientId
-            )
-            .maybeSingle();
+    let data = null;
+
+    if (slugFromPath) {
+        const result =
+            await supabaseClient
+                .from("Clients")
+                .select("*")
+                .eq("slug", slugFromPath)
+                .maybeSingle();
+
+        data = result.data;
+    } else if (clientId) {
+        const result =
+            await supabaseClient
+                .from("Clients")
+                .select("*")
+                .eq("id", clientId)
+                .maybeSingle();
+
+        data = result.data;
+    }
 
 
     if(data){
