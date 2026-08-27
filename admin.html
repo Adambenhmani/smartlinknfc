@@ -829,6 +829,38 @@ body {
             </div>
 
 
+
+            <div class="file-box full">
+                <label for="themeColor">🎨 Profile Color</label>
+
+                <div
+                    id="themePalette"
+                    style="display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:7px;margin:10px 0 12px;">
+                </div>
+
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <input
+                        type="color"
+                        id="themeColor"
+                        name="themeColor"
+                        value="#111111"
+                        style="width:58px;height:44px;padding:2px;border:1px solid #ddd;border-radius:10px;cursor:pointer;">
+
+                    <input
+                        type="text"
+                        id="themeColorHex"
+                        maxlength="7"
+                        value="#111111"
+                        placeholder="#111111"
+                        style="flex:1;padding:11px 12px;border:1px solid #ddd;border-radius:10px;">
+                </div>
+
+                <small style="display:block;margin-top:7px;color:#777;">
+                    اختار أي لون من palette أو استعمل Color Picker. تقدر تدخل أي HEX بغيتي.
+                </small>
+            </div>
+
+
             <textarea
                 name="about"
                 placeholder="About / Bio"></textarea>
@@ -1152,6 +1184,12 @@ const galleryFiles =
 
 const galleryPreview =
     document.getElementById("galleryPreview");
+
+const themeColor =
+    document.getElementById("themeColor");
+
+const themeColorHex =
+    document.getElementById("themeColorHex");
 
 const uploadProgress =
     document.getElementById("uploadProgress");
@@ -1499,6 +1537,148 @@ galleryFiles.addEventListener(
 );
 
 
+
+function normalizeThemeColor(value){
+
+    const v =
+        String(value || "").trim();
+
+    if(/^#[0-9a-fA-F]{6}$/.test(v)){
+        return v.toLowerCase();
+    }
+
+    return "#111111";
+}
+
+
+const themePalette =
+    document.getElementById("themePalette");
+
+const themePaletteColors = [
+    "#111111","#FFFFFF","#F5F5F5","#808080","#D4AF37",
+    "#FF0000","#FF4D4D","#FF7A00","#FFA500","#FFD700",
+    "#FFFF00","#9ACD32","#00A86B","#00C853","#00FFFF",
+    "#00BFFF","#007BFF","#0066FF","#4169E1","#0000FF",
+    "#6A0DAD","#8A2BE2","#9B59B6","#FF00FF","#E91E63",
+    "#FF1493","#795548","#8B4513","#C0C0C0","#2F4F4F"
+];
+
+themePaletteColors.forEach(function(color){
+
+    const button =
+        document.createElement("button");
+
+    button.type =
+        "button";
+
+    button.title =
+        color;
+
+    button.style.width =
+        "100%";
+
+    button.style.aspectRatio =
+        "1 / 1";
+
+    button.style.borderRadius =
+        "9px";
+
+    button.style.border =
+        color.toLowerCase() === "#ffffff"
+            ? "1px solid #ccc"
+            : "1px solid rgba(0,0,0,.08)";
+
+    button.style.background =
+        color;
+
+    button.style.cursor =
+        "pointer";
+
+    button.addEventListener(
+        "click",
+        function(){
+
+            themeColor.value =
+                color;
+
+            themeColorHex.value =
+                color;
+
+            updateSelectedThemeColor();
+
+        }
+    );
+
+    themePalette.appendChild(button);
+
+});
+
+function updateSelectedThemeColor(){
+
+    const selected =
+        normalizeThemeColor(
+            themeColor.value
+        );
+
+    themePalette
+        .querySelectorAll("button")
+        .forEach(function(button){
+
+            const active =
+                button.title.toLowerCase() ===
+                selected.toLowerCase();
+
+            button.style.outline =
+                active
+                    ? "3px solid #111"
+                    : "none";
+
+            button.style.outlineOffset =
+                active
+                    ? "2px"
+                    : "0";
+
+        });
+
+}
+
+themeColor.addEventListener(
+    "input",
+    function(){
+
+        const value =
+            normalizeThemeColor(themeColor.value);
+
+        themeColorHex.value =
+            value;
+
+        updateSelectedThemeColor();
+
+    }
+);
+
+themeColorHex.addEventListener(
+    "input",
+    function(){
+
+        const value =
+            String(themeColorHex.value || "").trim();
+
+        if(/^#[0-9a-fA-F]{6}$/.test(value)){
+
+            themeColor.value =
+                value;
+
+            updateSelectedThemeColor();
+
+        }
+
+    }
+);
+
+updateSelectedThemeColor();
+
+
 function resetPreviews(){
 
     photoPreview.style.display =
@@ -1515,6 +1695,18 @@ function resetPreviews(){
 
     galleryPreview.innerHTML =
         "";
+
+    if(themeColor){
+        themeColor.value =
+            "#111111";
+    }
+
+    if(themeColorHex){
+        themeColorHex.value =
+            "#111111";
+    }
+
+    updateSelectedThemeColor();
 
     if(galleryFiles){
         galleryFiles.value =
@@ -1663,6 +1855,11 @@ clientForm.addEventListener(
 
                 about:
                     formData.get("about")?.trim() || null,
+
+                theme_color:
+                    normalizeThemeColor(
+                        themeColor.value
+                    ),
 
                 photos:
                     editingClientId
@@ -2181,6 +2378,24 @@ function editClient(id){
         clientForm.elements["slug"].value =
             client.slug || "";
     }
+
+    const existingTheme =
+        normalizeThemeColor(
+            client.theme_color
+        );
+
+    if(themeColor){
+        themeColor.value =
+            existingTheme;
+    }
+
+    if(themeColorHex){
+        themeColorHex.value =
+            existingTheme;
+    }
+
+    updateSelectedThemeColor();
+
 
     if(galleryPreview){
 
