@@ -22,29 +22,28 @@
         }
 
         .profile {
-            max-width: 540px;
+            max-width: 430px;
             min-height: 100vh;
             margin: auto;
             background: white;
             text-align: center;
             padding-bottom: 40px;
-            box-shadow: 0 0 30px rgba(0,0,0,.08);
         }
 
         .cover {
-            height: 190px;
+            height: 150px;
             background: linear-gradient(135deg, #111, #333);
             background-size: cover;
             background-position: center;
         }
 
         .photo {
-            width: 120px;
-            height: 120px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
             background: #ddd;
             border: 5px solid white;
-            margin: -60px auto 15px;
+            margin: -55px auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -59,7 +58,7 @@
         }
 
         h1 {
-            font-size: 28px;
+            font-size: 26px;
             margin-bottom: 6px;
         }
 
@@ -114,14 +113,13 @@
         }
 
         .section h2 {
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 10px;
         }
 
         .section p {
             color: #555;
             line-height: 1.6;
-            white-space: pre-line;
         }
 
         .social {
@@ -145,24 +143,18 @@
             color: #999;
         }
 
-        .loading,
-        .error {
+        .loading {
             padding: 80px 20px;
+            color: #666;
         }
 
         .error {
+            padding: 80px 20px;
             color: #c00;
         }
 
         .hidden {
             display: none !important;
-        }
-
-        @media (max-width: 600px) {
-            .profile {
-                width: 100%;
-                box-shadow: none;
-            }
         }
     </style>
 </head>
@@ -173,7 +165,9 @@
 
     <div class="cover" id="cover"></div>
 
-    <div class="photo" id="photo">👤</div>
+    <div class="photo" id="photo">
+        👤
+    </div>
 
     <h1 id="name">Loading...</h1>
 
@@ -207,11 +201,13 @@
     </div>
 
     <div class="section">
+
         <h2>About</h2>
 
         <p id="about">
             Welcome to my digital business card.
         </p>
+
     </div>
 
     <div class="social">
@@ -240,6 +236,7 @@
 
 </div>
 
+
 <script>
 
     // =========================================================
@@ -247,10 +244,11 @@
     // =========================================================
 
     const SUPABASE_URL =
-        "https://sxnthstllporbicsdbjk.supabase.co";
+        "https://sxntstllporbicsdbjk.supabase.co";
 
     const SUPABASE_KEY =
         "sb_publishable_Jnbgc4Z3e4p1KvPSAggX0w_m17LC7G_";
+
 
     const supabaseClient =
         window.supabase.createClient(
@@ -271,45 +269,6 @@
 
 
     // =========================================================
-    // HELPERS
-    // =========================================================
-
-    function showError(message) {
-
-        document.getElementById("name").innerText =
-            "Profile not found";
-
-        document.getElementById("job").innerText =
-            message;
-
-        document.getElementById("company").innerText =
-            "";
-
-        document.getElementById("about").innerText =
-            "";
-    }
-
-
-    function normalizeUrl(url) {
-
-        if (!url) return "";
-
-        url = String(url).trim();
-
-        if (
-            url.startsWith("http://") ||
-            url.startsWith("https://") ||
-            url.startsWith("mailto:") ||
-            url.startsWith("tel:")
-        ) {
-            return url;
-        }
-
-        return "https://" + url;
-    }
-
-
-    // =========================================================
     // LOAD CLIENT
     // =========================================================
 
@@ -317,49 +276,42 @@
 
         try {
 
-            if (!clientId) {
+            let query = supabaseClient
+                .from("Clients")
+                .select("*");
 
-                showError(
-                    "No profile ID was provided in the link."
-                );
 
-                return;
+            // If URL contains ?id=UUID
+
+            if (clientId) {
+
+                query =
+                    query.eq("id", clientId);
+
+            } else {
+
+                // For testing:
+                // If no ID is provided, load first client
+
+                query =
+                    query.limit(1);
+
             }
 
 
             const { data, error } =
-                await supabaseClient
-                    .from("Clients")
-                    .select("*")
-                    .eq("id", clientId)
-                    .maybeSingle();
+                await query.single();
 
 
             if (error) {
 
-                console.error(
-                    "Supabase error:",
-                    error
-                );
+                console.error(error);
 
-                showError(
-                    "Unable to load this profile. Please try again."
-                );
+                document.getElementById("name").innerText =
+                    "Profile not found";
 
-                return;
-            }
-
-
-            if (!data) {
-
-                console.error(
-                    "No client found for ID:",
-                    clientId
-                );
-
-                showError(
-                    "This profile does not exist or is not available."
-                );
+                document.getElementById("job").innerText =
+                    "Please check the profile link";
 
                 return;
             }
@@ -367,17 +319,16 @@
 
             displayClient(data);
 
+
         } catch (error) {
 
-            console.error(
-                "Unexpected error:",
-                error
-            );
+            console.error(error);
 
-            showError(
-                "Something went wrong while loading the profile."
-            );
+            document.getElementById("name").innerText =
+                "Something went wrong";
+
         }
+
     }
 
 
@@ -388,25 +339,33 @@
     function displayClient(client) {
 
 
+        // =====================================================
         // NAME
+        // =====================================================
 
         document.getElementById("name").innerText =
             client.name || "SmartLink NFC";
 
 
+        // =====================================================
         // COMPANY
+        // =====================================================
 
         document.getElementById("company").innerText =
             client.company || "";
 
 
+        // =====================================================
         // JOB
+        // =====================================================
 
         document.getElementById("job").innerText =
             client.job || "SmartLink NFC";
 
 
+        // =====================================================
         // ABOUT
+        // =====================================================
 
         document.getElementById("about").innerText =
             client.about ||
@@ -422,22 +381,9 @@
             const photo =
                 document.getElementById("photo");
 
-            photo.innerHTML = "";
+            photo.innerHTML =
+                `<img src="${client.photo}" alt="${client.name || "Profile"}">`;
 
-            const img =
-                document.createElement("img");
-
-            img.src = client.photo;
-
-            img.alt =
-                client.name || "Profile photo";
-
-            img.onerror = function () {
-
-                photo.innerHTML = "👤";
-            };
-
-            photo.appendChild(img);
         }
 
 
@@ -447,9 +393,9 @@
 
         if (client.cover) {
 
-            document.getElementById("cover")
-                .style.backgroundImage =
+            document.getElementById("cover").style.backgroundImage =
                 `url("${client.cover}")`;
+
         }
 
 
@@ -462,10 +408,14 @@
             document.getElementById("callBtn").href =
                 "tel:" + client.phone;
 
+            document.getElementById("callBtn")
+                .classList.remove("hidden");
+
         } else {
 
             document.getElementById("callBtn")
                 .classList.add("hidden");
+
         }
 
 
@@ -473,38 +423,43 @@
         // WHATSAPP
         // =====================================================
 
-        if (client.whatsapp) {
+        // First use whatsapp column.
+        // If whatsapp is empty/missing, use phone.
+
+        const whatsappValue =
+            client.whatsapp || client.phone || "";
+
+
+        if (whatsappValue) {
 
             let whatsappNumber =
-                String(client.whatsapp)
-                    .replace(/\D/g, "");
+                String(whatsappValue).replace(/\D/g, "");
 
+
+            // Moroccan number:
+            // 06XXXXXXXX -> 2126XXXXXXXX
+            // 07XXXXXXXX -> 2127XXXXXXXX
 
             if (whatsappNumber.startsWith("0")) {
 
                 whatsappNumber =
-                    "212" +
-                    whatsappNumber.substring(1);
+                    "212" + whatsappNumber.substring(1);
+
             }
 
 
-            if (whatsappNumber) {
+            document.getElementById("whatsappBtn").href =
+                "https://wa.me/" + whatsappNumber;
 
-                document.getElementById("whatsappBtn")
-                    .href =
-                    "https://wa.me/" +
-                    whatsappNumber;
 
-            } else {
-
-                document.getElementById("whatsappBtn")
-                    .classList.add("hidden");
-            }
+            document.getElementById("whatsappBtn")
+                .classList.remove("hidden");
 
         } else {
 
             document.getElementById("whatsappBtn")
                 .classList.add("hidden");
+
         }
 
 
@@ -517,10 +472,14 @@
             document.getElementById("emailBtn").href =
                 "mailto:" + client.email;
 
+            document.getElementById("emailBtn")
+                .classList.remove("hidden");
+
         } else {
 
             document.getElementById("emailBtn")
                 .classList.add("hidden");
+
         }
 
 
@@ -530,12 +489,12 @@
 
         if (client.website) {
 
-            document.getElementById("websiteBtn")
-                .href =
-                normalizeUrl(client.website);
+            document.getElementById("websiteBtn").href =
+                client.website;
 
             document.getElementById("websiteBtn")
                 .classList.remove("hidden");
+
         }
 
 
@@ -545,12 +504,12 @@
 
         if (client.instagram) {
 
-            document.getElementById("instagramBtn")
-                .href =
-                normalizeUrl(client.instagram);
+            document.getElementById("instagramBtn").href =
+                client.instagram;
 
             document.getElementById("instagramBtn")
                 .classList.remove("hidden");
+
         }
 
 
@@ -560,12 +519,12 @@
 
         if (client.linkedin) {
 
-            document.getElementById("linkedinBtn")
-                .href =
-                normalizeUrl(client.linkedin);
+            document.getElementById("linkedinBtn").href =
+                client.linkedin;
 
             document.getElementById("linkedinBtn")
                 .classList.remove("hidden");
+
         }
 
 
@@ -575,12 +534,12 @@
 
         if (client.facebook) {
 
-            document.getElementById("facebookBtn")
-                .href =
-                normalizeUrl(client.facebook);
+            document.getElementById("facebookBtn").href =
+                client.facebook;
 
             document.getElementById("facebookBtn")
                 .classList.remove("hidden");
+
         }
 
 
@@ -589,6 +548,7 @@
         // =====================================================
 
         setupContactDownload(client);
+
     }
 
 
@@ -598,14 +558,18 @@
 
     function setupContactDownload(client) {
 
+
         const name =
             client.name || "";
+
 
         const company =
             client.company || "";
 
+
         const phone =
             client.phone || "";
+
 
         const email =
             client.email || "";
@@ -614,10 +578,10 @@
         const vcard =
 `BEGIN:VCARD
 VERSION:3.0
-FN:${escapeVCard(name)}
-ORG:${escapeVCard(company)}
-TEL;TYPE=CELL:${escapeVCard(phone)}
-EMAIL:${escapeVCard(email)}
+FN:${name}
+ORG:${company}
+TEL;TYPE=CELL:${phone}
+EMAIL:${email}
 END:VCARD`;
 
 
@@ -625,8 +589,7 @@ END:VCARD`;
             new Blob(
                 [vcard],
                 {
-                    type:
-                        "text/vcard;charset=utf-8"
+                    type: "text/vcard;charset=utf-8"
                 }
             );
 
@@ -636,9 +599,7 @@ END:VCARD`;
 
 
         const saveButton =
-            document.getElementById(
-                "saveContact"
-            );
+            document.getElementById("saveContact");
 
 
         saveButton.href =
@@ -646,22 +607,8 @@ END:VCARD`;
 
 
         saveButton.download =
-            (name || "SmartLink-NFC") +
-            ".vcf";
-    }
+            (name || "SmartLink-NFC") + ".vcf";
 
-
-    // =========================================================
-    // ESCAPE VCARD TEXT
-    // =========================================================
-
-    function escapeVCard(value) {
-
-        return String(value)
-            .replace(/\\/g, "\\\\")
-            .replace(/\n/g, "\\n")
-            .replace(/,/g, "\\,")
-            .replace(/;/g, "\\;");
     }
 
 
