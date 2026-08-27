@@ -307,7 +307,8 @@ body{
 ===================================================== */
 
 .photos-section{
-    margin-top:28px;
+    margin-top:30px;
+    width:100%;
 }
 
 .photos-section h2{
@@ -317,7 +318,8 @@ body{
 .photos-gallery{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px;
+    gap:12px;
+    width:100%;
 }
 
 .photo-item{
@@ -634,6 +636,21 @@ body{
         </div>
 
 
+        <!-- PHOTOS -->
+        <div
+            class="section photos-section hidden"
+            id="photosSection">
+
+            <h2>Photos</h2>
+
+            <div
+                class="photos-gallery"
+                id="photosGallery">
+            </div>
+
+        </div>
+
+
     </div>
 
 
@@ -660,20 +677,6 @@ body{
 
 </div>
 
-
-        <!-- PHOTOS -->
-        <div
-            class="section photos-section hidden"
-            id="photosSection">
-
-            <h2>Photos</h2>
-
-            <div
-                class="photos-gallery"
-                id="photosGallery">
-            </div>
-
-        </div>
 
     <div class="footer">
 
