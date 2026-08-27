@@ -413,6 +413,13 @@ body{
     border-color:var(--profile-color) !important;
 }
 
+
+/* FINAL PROFILE THEME */
+:root{
+    --profile-color:#111111;
+    --profile-color-soft:rgba(17,17,17,.10);
+}
+
 </style>
 
 </head>
@@ -975,25 +982,52 @@ function applyProfileTheme(color){
             hexToRgba(safeColor, 0.10)
         );
 
+    // Apply the chosen color to the visible profile UI.
     document
         .querySelectorAll(
-            ".theme-primary, .save-contact-button"
+            ".save-contact-button, #saveContact, .theme-primary"
         )
         .forEach(function(el){
 
-            el.style.backgroundColor =
-                safeColor;
+            el.style.setProperty(
+                "background-color",
+                safeColor,
+                "important"
+            );
+
+            el.style.setProperty(
+                "border-color",
+                safeColor,
+                "important"
+            );
 
         });
 
     document
         .querySelectorAll(
-            ".theme-accent"
+            "h1, h2, .theme-accent"
         )
         .forEach(function(el){
 
-            el.style.color =
-                safeColor;
+            el.style.setProperty(
+                "color",
+                safeColor,
+                "important"
+            );
+
+        });
+
+    document
+        .querySelectorAll(
+            ".link a, .social-link"
+        )
+        .forEach(function(el){
+
+            el.style.setProperty(
+                "border-color",
+                hexToRgba(safeColor, 0.22),
+                "important"
+            );
 
         });
 }
