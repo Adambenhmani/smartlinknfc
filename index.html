@@ -2,6 +2,13 @@
 <html lang="en">
 
 <head>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+BZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta5gqP5g3n1v7K8m9x5xJ1qJQ5vR9vJ8l7Y2hY7Q6GQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer">
+
 
 <meta charset="UTF-8">
 
@@ -10,7 +17,30 @@
 
 <title>SmartLink NFC</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+<script>
+function getSocialIcon(label){
+    const key = String(label || "").trim().toLowerCase();
+    const icons = {
+        whatsapp: "fa-brands fa-whatsapp",
+        instagram: "fa-brands fa-instagram",
+        facebook: "fa-brands fa-facebook-f",
+        linkedin: "fa-brands fa-linkedin-in",
+        youtube: "fa-brands fa-youtube",
+        tiktok: "fa-brands fa-tiktok",
+        website: "fa-solid fa-globe",
+        "site web": "fa-solid fa-globe",
+        email: "fa-solid fa-envelope",
+        téléphone: "fa-solid fa-phone",
+        telephone: "fa-solid fa-phone",
+        phone: "fa-solid fa-phone",
+        adresse: "fa-solid fa-location-dot",
+        "google maps": "fa-solid fa-location-dot"
+    };
+    return icons[key] || "fa-solid fa-link";
+}
+</script>
+</script>
 
 <style>
 
@@ -237,6 +267,23 @@ body{
         min-height:82px;
     }
 }
+
+/* REAL APP / BRAND ICONS */
+.action-icon i,
+.action-button i{
+    font-size:28px;
+    line-height:1;
+}
+.social-icon i,
+.link-icon i{
+    font-size:30px;
+}
+.action-button .action-icon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
 </style>
 
 </head>
@@ -340,7 +387,7 @@ body{
             class="save-contact"
             id="saveContact">
 
-            💾 Save Contact
+            <i class="fa-solid fa-address-card"></i> Save Contact
 
         </button>
 
@@ -354,7 +401,7 @@ body{
                 id="callButton"
                 href="#">
 
-                <div class="action-icon">📞</div>
+                <div class="action-icon"><i class="fa-solid fa-phone"></i></div>
 
                 <div class="action-text">
                     Call
@@ -370,7 +417,7 @@ body{
                 target="_blank"
                 rel="noopener noreferrer">
 
-                <div class="action-icon">📍</div>
+                <div class="action-icon"><i class="fa-solid fa-location-dot"></i></div>
 
                 <div class="action-text">
                     Google Maps
@@ -384,7 +431,7 @@ body{
                 id="emailButton"
                 href="#">
 
-                <div class="action-icon">✉️</div>
+                <div class="action-icon"><i class="fa-solid fa-envelope"></i></div>
 
                 <div class="action-text">
                     Email
