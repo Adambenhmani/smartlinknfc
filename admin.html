@@ -630,6 +630,18 @@ body {
 
             <div>
 
+                <label>Profile Username / Slug</label>
+
+                <input
+                    type="text"
+                    name="slug"
+                    placeholder="samir">
+
+            </div>
+
+
+            <div>
+
                 <label>Job / Position</label>
 
                 <input
@@ -1514,6 +1526,11 @@ clientForm.addEventListener(
                 name:
                     formData.get("name")?.trim() || null,
 
+                slug:
+                    (formData.get("slug")?.trim().toLowerCase()
+                        .replace(/[^a-z0-9-]+/g, "-")
+                        .replace(/^-+|-+$/g, "")) || null,
+
                 job:
                     formData.get("job")?.trim() || null,
 
@@ -1556,6 +1573,13 @@ clientForm.addEventListener(
 
             let clientId =
                 editingClientId;
+
+            if(!client.slug && client.name){
+                client.slug = client.name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .replace(/^-+|-+$/g, "");
+            }
 
 
             if(!editingClientId){
@@ -1899,14 +1923,28 @@ function renderClients(list){
 
 function viewClient(id){
 
+    const client =
+        clients.find(
+            function(item){
+                return String(item.id) === String(id);
+            }
+        );
+
+    if(!client){
+        alert("Client not found.");
+        return;
+    }
+
+    const slug = client.slug || client.id;
+
     const url =
         window.location.origin +
         window.location.pathname.replace(
             "admin.html",
             "index.html"
         ) +
-        "?id=" +
-        encodeURIComponent(id);
+        "/" +
+        encodeURIComponent(slug);
 
 
     window.open(
@@ -1956,6 +1994,11 @@ function editClient(id){
 
     clientForm.elements["name"].value =
         client.name || "";
+
+    if(clientForm.elements["slug"]){
+        clientForm.elements["slug"].value =
+            client.slug || "";
+    }
 
 
     clientForm.elements["job"].value =
