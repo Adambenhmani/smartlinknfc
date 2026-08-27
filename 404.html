@@ -301,6 +301,90 @@ body{
     margin-right:10px;
 }
 
+
+/* =====================================================
+   PHOTOS GALLERY
+===================================================== */
+
+.photos-section{
+    margin-top:28px;
+}
+
+.photos-section h2{
+    margin-bottom:14px;
+}
+
+.photos-gallery{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+}
+
+.photo-item{
+    width:100%;
+    aspect-ratio:1 / 1;
+    border-radius:14px;
+    overflow:hidden;
+    background:#f3f3f3;
+    cursor:pointer;
+}
+
+.photo-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform .2s ease;
+}
+
+.photo-item:hover img{
+    transform:scale(1.03);
+}
+
+/* Fullscreen photo viewer */
+.photo-lightbox{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:rgba(0,0,0,.88);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.photo-lightbox.hidden{
+    display:none;
+}
+
+.photo-lightbox img{
+    max-width:92vw;
+    max-height:88vh;
+    object-fit:contain;
+    border-radius:12px;
+}
+
+.photo-lightbox-close{
+    position:absolute;
+    top:18px;
+    right:20px;
+    width:44px;
+    height:44px;
+    border:0;
+    border-radius:50%;
+    background:#fff;
+    color:#111;
+    font-size:28px;
+    line-height:1;
+    cursor:pointer;
+}
+
+@media(max-width:480px){
+    .photos-gallery{
+        gap:8px;
+    }
+}
+
 </style>
 
 </head>
@@ -477,6 +561,22 @@ body{
         </div>
 
 
+
+        <!-- PHOTOS -->
+        <div
+            class="section photos-section hidden"
+            id="photosSection">
+
+            <h2>Photos</h2>
+
+            <div
+                class="photos-gallery"
+                id="photosGallery">
+            </div>
+
+        </div>
+
+
         <!-- LINKS -->
 
         <div
@@ -552,6 +652,30 @@ body{
 
 
     </div>
+
+
+
+<!-- PHOTO LIGHTBOX -->
+<div
+    class="photo-lightbox hidden"
+    id="photoLightbox">
+
+    <button
+        class="photo-lightbox-close"
+        id="photoLightboxClose"
+        type="button"
+        aria-label="Close">
+
+        ×
+
+    </button>
+
+    <img
+        id="photoLightboxImage"
+        src=""
+        alt="Photo">
+
+</div>
 
 
     <div class="footer">
@@ -638,6 +762,21 @@ const aboutSection =
 
 const linksSection =
     document.getElementById("linksSection");
+
+const photosSection =
+    document.getElementById("photosSection");
+
+const photosGallery =
+    document.getElementById("photosGallery");
+
+const photoLightbox =
+    document.getElementById("photoLightbox");
+
+const photoLightboxImage =
+    document.getElementById("photoLightboxImage");
+
+const photoLightboxClose =
+    document.getElementById("photoLightboxClose");
 
 
 /* =====================================================
@@ -1132,6 +1271,77 @@ function renderProfile(client){
     }
 
 
+
+    /* PHOTOS */
+    let photos = [];
+
+    if(Array.isArray(client.photos)){
+        photos = client.photos.filter(Boolean);
+    }else if(typeof client.photos === "string"){
+        try{
+            const parsed = JSON.parse(client.photos);
+            if(Array.isArray(parsed)){
+                photos = parsed.filter(Boolean);
+            }
+        }catch(e){
+            photos = client.photos
+                .split(",")
+                .map(function(item){ return item.trim(); })
+                .filter(Boolean);
+        }
+    }
+
+    photos = photos.slice(0,4);
+
+    if(photos.length){
+
+        photosGallery.innerHTML =
+            photos.map(function(photo, index){
+
+                return `
+                    <div class="photo-item" data-photo-index="${index}">
+                        <img
+                            src="${validUrl(photo)}"
+                            alt="Photo ${index + 1}"
+                            loading="lazy">
+                    </div>
+                `;
+
+            }).join("");
+
+        photosSection.classList.remove("hidden");
+
+        photosGallery
+            .querySelectorAll(".photo-item")
+            .forEach(function(item){
+
+                item.addEventListener(
+                    "click",
+                    function(){
+
+                        const index =
+                            Number(
+                                item.dataset.photoIndex
+                            );
+
+                        photoLightboxImage.src =
+                            validUrl(photos[index]);
+
+                        photoLightbox.classList.remove(
+                            "hidden"
+                        );
+
+                    }
+                );
+
+            });
+
+    }else{
+
+        photosSection.classList.add("hidden");
+
+    }
+
     /* SHOW PROFILE */
 
     loading.classList.add(
@@ -1319,6 +1529,32 @@ END:VCARD`;
         URL.revokeObjectURL(
             url
         );
+
+    }
+);
+
+
+
+/* =====================================================
+   PHOTO LIGHTBOX
+===================================================== */
+
+photoLightboxClose.addEventListener(
+    "click",
+    function(){
+        photoLightbox.classList.add("hidden");
+        photoLightboxImage.src = "";
+    }
+);
+
+photoLightbox.addEventListener(
+    "click",
+    function(event){
+
+        if(event.target === photoLightbox){
+            photoLightbox.classList.add("hidden");
+            photoLightboxImage.src = "";
+        }
 
     }
 );
