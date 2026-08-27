@@ -1224,8 +1224,9 @@ X-SOCIALPROFILE;TYPE=instagram:${escapeVCard(client.instagram || "")}
 X-SOCIALPROFILE;TYPE=facebook:${escapeVCard(client.facebook || "")}
 X-SOCIALPROFILE;TYPE=linkedin:${escapeVCard(client.linkedin || "")}
 X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard(client.whatsapp ? "https://wa.me/" + whatsappPhone(client.whatsapp) : "")}
-X-ABLabel:Google Maps
-X-ABURL:${escapeVCard(client.maps_link || "")}
+URL:${escapeVCard(client.website || "")}
+item1.URL:${escapeVCard(client.maps_link || "")}
+item1.X-ABLabel:Google Maps
 NOTE:${escapeVCard(client.about || "")}
 END:VCARD`;
 
