@@ -804,6 +804,30 @@ body {
             </div>
 
 
+
+            <!-- PROFILE GALLERY -->
+            <div class="file-box full">
+
+                <label>🖼️ Photos Gallery (up to 4 photos)</label>
+
+                <input
+                    type="file"
+                    id="galleryFiles"
+                    accept="image/*"
+                    multiple>
+
+                <small style="display:block;margin-top:6px;color:#777;">
+                    Select up to 4 photos. They will appear as 2 × 2.
+                </small>
+
+                <div
+                    id="galleryPreview"
+                    style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px;">
+                </div>
+
+            </div>
+
+
             <textarea
                 name="about"
                 placeholder="About / Bio"></textarea>
@@ -1122,6 +1146,12 @@ const coverPreview =
 const coverPreviewImg =
     document.getElementById("coverPreviewImg");
 
+const galleryFiles =
+    document.getElementById("galleryFiles");
+
+const galleryPreview =
+    document.getElementById("galleryPreview");
+
 const uploadProgress =
     document.getElementById("uploadProgress");
 
@@ -1407,6 +1437,67 @@ function previewFile(
 }
 
 
+
+galleryFiles.addEventListener(
+    "change",
+    function(){
+
+        galleryPreview.innerHTML = "";
+
+        const files =
+            Array.from(galleryFiles.files)
+                .slice(0,4);
+
+        files.forEach(function(file){
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                function(event){
+
+                    const img =
+                        document.createElement("img");
+
+                    img.src =
+                        event.target.result;
+
+                    img.alt =
+                        "Gallery preview";
+
+                    img.style.width =
+                        "100%";
+
+                    img.style.aspectRatio =
+                        "1 / 1";
+
+                    img.style.objectFit =
+                        "cover";
+
+                    img.style.borderRadius =
+                        "10px";
+
+                    galleryPreview.appendChild(img);
+
+                };
+
+            reader.readAsDataURL(file);
+
+        });
+
+        if(galleryFiles.files.length > 4){
+
+            showMessage(
+                "Only the first 4 gallery photos will be used.",
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
 function resetPreviews(){
 
     photoPreview.style.display =
@@ -1420,6 +1511,14 @@ function resetPreviews(){
 
     coverPreviewImg.src =
         "";
+
+    galleryPreview.innerHTML =
+        "";
+
+    if(galleryFiles){
+        galleryFiles.value =
+            "";
+    }
 
 }
 
@@ -1562,7 +1661,22 @@ clientForm.addEventListener(
                     formData.get("maps_link")?.trim() || null,
 
                 about:
-                    formData.get("about")?.trim() || null
+                    formData.get("about")?.trim() || null,
+
+                photos:
+                    editingClientId
+                        ? (
+                            Array.isArray(
+                                clients.find(function(item){
+                                    return String(item.id) === String(editingClientId);
+                                })?.photos
+                            )
+                                ? clients.find(function(item){
+                                    return String(item.id) === String(editingClientId);
+                                }).photos
+                                : []
+                          )
+                        : []
 
             };
 
@@ -1650,6 +1764,58 @@ clientForm.addEventListener(
             }
 
 
+
+            /* =================================================
+               UPLOAD GALLERY PHOTOS
+            ================================================= */
+
+            if(galleryFiles.files.length){
+
+                uploadProgress.style.display =
+                    "block";
+
+                uploadProgress.textContent =
+                    "Uploading gallery photos...";
+
+                const selectedGalleryFiles =
+                    Array.from(galleryFiles.files)
+                        .slice(0,4);
+
+                const galleryUrls = [];
+
+                for(
+                    let i = 0;
+                    i < selectedGalleryFiles.length;
+                    i++
+                ){
+
+                    uploadProgress.textContent =
+                        "Uploading gallery photo " +
+                        (i + 1) +
+                        " of " +
+                        selectedGalleryFiles.length +
+                        "...";
+
+                    const galleryUrl =
+                        await uploadImage(
+                            selectedGalleryFiles[i],
+                            "profile-photos",
+                            clientId,
+                            "gallery-" + (i + 1)
+                        );
+
+                    if(galleryUrl){
+                        galleryUrls.push(galleryUrl);
+                    }
+
+                }
+
+                client.photos =
+                    galleryUrls;
+
+            }
+
+
             /* =================================================
                UPDATE CLIENT
             ================================================= */
@@ -1679,7 +1845,11 @@ clientForm.addEventListener(
                  * update it with photo/cover URLs.
                  */
 
-                if(client.photo || client.cover){
+                if(
+                    client.photo ||
+                    client.cover ||
+                    client.photos
+                ){
 
                     const { error } =
                         await supabaseClient
@@ -1689,7 +1859,10 @@ clientForm.addEventListener(
                                     client.photo || null,
 
                                 cover:
-                                    client.cover || null
+                                    client.cover || null,
+
+                                photos:
+                                    client.photos || []
                             })
                             .eq(
                                 "id",
@@ -1999,6 +2172,45 @@ function editClient(id){
         clientForm.elements["slug"].value =
             client.slug || "";
     }
+
+    if(galleryPreview){
+
+        galleryPreview.innerHTML = "";
+
+        const existingPhotos =
+            Array.isArray(client.photos)
+                ? client.photos.slice(0,4)
+                : [];
+
+        existingPhotos.forEach(function(url){
+
+            const img =
+                document.createElement("img");
+
+            img.src =
+                url;
+
+            img.alt =
+                "Existing gallery photo";
+
+            img.style.width =
+                "100%";
+
+            img.style.aspectRatio =
+                "1 / 1";
+
+            img.style.objectFit =
+                "cover";
+
+            img.style.borderRadius =
+                "10px";
+
+            galleryPreview.appendChild(img);
+
+        });
+
+    }
+
 
 
     clientForm.elements["job"].value =
