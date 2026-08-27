@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>SmartLink NFC</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f3f4f6;
+    color:#111;
+}
+
+.profile-page{
+    width:100%;
+    max-width:600px;
+    min-height:100vh;
+    margin:auto;
+    background:white;
+    box-shadow:0 0 30px rgba(0,0,0,.08);
+}
+
+.cover{
+    height:230px;
+    background:linear-gradient(135deg,#111,#292929);
+    background-size:cover;
+    background-position:center;
+    position:relative;
+}
+
+.profile-photo{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    position:absolute;
+    left:50%;
+    bottom:-65px;
+    transform:translateX(-50%);
+    background:#ddd;
+    border:6px solid white;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.profile-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.default-avatar{
+    font-size:55px;
+}
+
+.content{
+    padding:85px 28px 35px;
+    text-align:center;
+}
+
+.name{
+    font-size:32px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.job{
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.company{
+    font-size:18px;
+    color:#666;
+    margin-bottom:28px;
+}
+
+.save-contact{
+    display:block;
+    width:100%;
+    padding:18px;
+    border-radius:15px;
+    background:#111;
+    color:white;
+    text-decoration:none;
+    font-size:19px;
+    font-weight:700;
+    border:0;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+.actions{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-bottom:30px;
+}
+
+.action{
+    background:#f1f1f1;
+    border-radius:14px;
+    padding:17px 8px;
+    text-decoration:none;
+    color:#111;
+    min-height:90px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.action-icon{
+    font-size:29px;
+    margin-bottom:8px;
+}
+
+.action-text{
+    font-size:14px;
+}
+
+.section{
+    text-align:left;
+    margin-top:28px;
+}
+
+.section h2{
+    font-size:23px;
+    margin-bottom:12px;
+}
+
+.about{
+    color:#555;
+    font-size:17px;
+    line-height:1.6;
+}
+
+.links{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.link{
+    display:block;
+    padding:14px;
+    background:#f5f5f5;
+    border-radius:10px;
+    color:#111;
+    text-decoration:none;
+}
+
+.footer{
+    text-align:center;
+    color:#999;
+    font-size:13px;
+    padding:25px;
+}
+
+.loading{
+    text-align:center;
+    padding:80px 20px;
+}
+
+.loading h1{
+    font-size:30px;
+}
+
+.error{
+    text-align:center;
+    padding:80px 25px;
+}
+
+.error h1{
+    font-size:28px;
+}
+
+.hidden{
+    display:none;
+}
+
+@media(max-width:500px){
+
+    .profile-page{
+        width:100%;
+    }
+
+    .cover{
+        height:210px;
+    }
+
+    .content{
+        padding-left:20px;
+        padding-right:20px;
+    }
+
+    .name{
+        font-size:29px;
+    }
+
+}
+
+
+
+/* MAPS ACTION STYLE */
+.actions{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.action{
+    min-height:92px;
+}
+
+@media(max-width:520px){
+    .actions{
+        gap:8px;
+    }
+    .action{
+        min-height:82px;
+    }
+}
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="profile-page">
+
+
+    <!-- COVER -->
+
+    <div
+        class="cover"
+        id="cover">
+
+        <div class="profile-photo">
+
+            <img
+                id="profilePhoto"
+                src=""
+                alt="Profile"
+                style="display:none;">
+
+            <div
+                class="default-avatar"
+                id="defaultAvatar">
+
+                👤
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- LOADING -->
+
+    <div
+        class="loading"
+        id="loading">
+
+        <h1>
+            Loading...
+        </h1>
+
+        <p>
+            SmartLink NFC
+        </p>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        class="error hidden"
+        id="error">
+
+        <h1>
+            Profile not found
+        </h1>
+
+        <p>
+            Please check the profile link.
+        </p>
+
+    </div>
+
+
+    <!-- PROFILE -->
+
+    <div
+        class="content hidden"
+        id="profileContent">
+
+
+        <div
+            class="name"
+            id="name">
+        </div>
+
+
+        <div
+            class="job"
+            id="job">
+        </div>
+
+
+        <div
+            class="company"
+            id="company">
+        </div>
+
+
+        <!-- SAVE CONTACT -->
+
+        <button
+            class="save-contact"
+            id="saveContact">
+
+            💾 Save Contact
+
+        </button>
+
+
+        <!-- ACTIONS -->
+
+        <div class="actions">
+
+            <a
+                class="action"
+                id="callButton"
+                href="#">
+
+                <div class="action-icon">📞</div>
+
+                <div class="action-text">
+                    Call
+                </div>
+
+            </a>
+
+
+            <a
+                class="action"
+                id="mapsButton"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer">
+
+                <div class="action-icon">📍</div>
+
+                <div class="action-text">
+                    Google Maps
+                </div>
+
+            </a>
+
+
+            <a
+                class="action"
+                id="emailButton"
+                href="#">
+
+                <div class="action-icon">✉️</div>
+
+                <div class="action-text">
+                    Email
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- ABOUT -->
+
+        <div
+            class="section"
+            id="aboutSection">
+
+            <h2>
+                About
+            </h2>
+
+            <div
+                class="about"
+                id="about">
+            </div>
+
+        </div>
+
+
+        <!-- LINKS -->
+
+        <div
+            class="section"
+            id="linksSection">
+
+            <h2>
+                Connect
+            </h2>
+
+            <div class="links">
+
+
+                <a
+                    class="link hidden"
+                    id="whatsappLink"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer">
+
+                    💬 WhatsApp
+
+                </a>
+
+
+                <a
+                    class="link hidden"
+                    id="websiteLink"
+                    href="#"
+                    target="_blank">
+
+                    🌐 Website
+
+                </a>
+
+
+                <a
+                    class="link hidden"
+                    id="instagramLink"
+                    href="#"
+                    target="_blank">
+
+                    📸 Instagram
+
+                </a>
+
+
+                <a
+                    class="link hidden"
+                    id="facebookLink"
+                    href="#"
+                    target="_blank">
+
+                    📘 Facebook
+
+                </a>
+
+
+                <a
+                    class="link hidden"
+                    id="linkedinLink"
+                    href="#"
+                    target="_blank">
+
+                    💼 LinkedIn
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="footer">
+
+        Powered by SmartLink NFC
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+    "https://sxnthstllporbicsdbjk.supabase.co";
+
+
+const SUPABASE_KEY =
+    "sb_publishable_Jnbgc4Z3e4p1KvPSAggX0w_m17LC7G_";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const loading =
+    document.getElementById("loading");
+
+const errorBox =
+    document.getElementById("error");
+
+const profileContent =
+    document.getElementById("profileContent");
+
+const cover =
+    document.getElementById("cover");
+
+const profilePhoto =
+    document.getElementById("profilePhoto");
+
+const defaultAvatar =
+    document.getElementById("defaultAvatar");
+
+const nameElement =
+    document.getElementById("name");
+
+const jobElement =
+    document.getElementById("job");
+
+const companyElement =
+    document.getElementById("company");
+
+const aboutElement =
+    document.getElementById("about");
+
+const callButton =
+    document.getElementById("callButton");
+
+const emailButton =
+    document.getElementById("emailButton");
+
+const saveContact =
+    document.getElementById("saveContact");
+
+const aboutSection =
+    document.getElementById("aboutSection");
+
+const linksSection =
+    document.getElementById("linksSection");
+
+
+/* =====================================================
+   GET CLIENT ID
+===================================================== */
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const clientId =
+    params.get("id");
+
+
+/* =====================================================
+   SHOW ERROR
+===================================================== */
+
+function showError(){
+
+    loading.classList.add("hidden");
+
+    profileContent.classList.add("hidden");
+
+    errorBox.classList.remove("hidden");
+
+}
+
+
+/* =====================================================
+   NORMALIZE PHONE
+===================================================== */
+
+function cleanPhone(phone){
+
+    if(!phone){
+        return "";
+    }
+
+    return String(phone)
+        .replace(/[^\d+]/g,"");
+
+}
+
+
+/* =====================================================
+   WHATSAPP PHONE
+===================================================== */
+
+function whatsappPhone(phone){
+
+    if(!phone){
+        return "";
+    }
+
+    let value =
+        String(phone)
+        .replace(/\D/g,"");
+
+
+    if(value.startsWith("0")){
+
+        value =
+            "212" +
+            value.substring(1);
+
+    }
+
+
+    if(!value.startsWith("212") &&
+       value.length <= 10){
+
+        value =
+            "212" +
+            value;
+
+    }
+
+
+    return value;
+
+}
+
+
+/* =====================================================
+   URL HELPER
+===================================================== */
+
+function validUrl(url){
+
+    if(!url){
+        return "";
+    }
+
+    let value =
+        String(url).trim();
+
+
+    if(
+        !value.startsWith("http://") &&
+        !value.startsWith("https://")
+    ){
+
+        value =
+            "https://" +
+            value;
+
+    }
+
+
+    return value;
+
+}
+
+
+/* =====================================================
+   LOAD PROFILE
+===================================================== */
+
+async function loadProfile(){
+
+    if(!clientId){
+
+        showError();
+
+        return;
+    }
+
+
+    console.log(
+        "Loading client:",
+        clientId
+    );
+
+
+    const { data, error } =
+        await supabaseClient
+            .from("Clients")
+            .select("*")
+            .eq(
+                "id",
+                clientId
+            )
+            .maybeSingle();
+
+
+    console.log(
+        "Supabase result:",
+        data,
+        error
+    );
+
+
+    if(error){
+
+        console.error(
+            "Supabase error:",
+            error
+        );
+
+        showError();
+
+        return;
+    }
+
+
+    if(!data){
+
+        console.error(
+            "No client found for ID:",
+            clientId
+        );
+
+        showError();
+
+        return;
+    }
+
+
+    renderProfile(data);
+
+}
+
+
+/* =====================================================
+   RENDER PROFILE
+===================================================== */
+
+function renderProfile(client){
+
+    console.log(
+        "Client loaded:",
+        client
+    );
+
+
+    /* NAME */
+
+    nameElement.textContent =
+        client.name ||
+        "SmartLink NFC";
+
+
+    /* JOB */
+
+    if(client.job){
+
+        jobElement.textContent =
+            client.job;
+
+        jobElement.style.display =
+            "block";
+
+    }else{
+
+        jobElement.style.display =
+            "none";
+
+    }
+
+
+    /* COMPANY */
+
+    if(client.company){
+
+        companyElement.textContent =
+            client.company;
+
+        companyElement.style.display =
+            "block";
+
+    }else{
+
+        companyElement.style.display =
+            "none";
+
+    }
+
+
+    /* PROFILE PHOTO */
+
+    if(client.photo){
+
+        profilePhoto.src =
+            client.photo;
+
+        profilePhoto.style.display =
+            "block";
+
+        defaultAvatar.style.display =
+            "none";
+
+    }else{
+
+        profilePhoto.style.display =
+            "none";
+
+        defaultAvatar.style.display =
+            "block";
+
+    }
+
+
+    /* COVER PHOTO */
+
+    if(client.cover){
+
+        cover.style.backgroundImage =
+            "url('" +
+            client.cover +
+            "')";
+
+    }else{
+
+        cover.style.backgroundImage =
+            "linear-gradient(135deg,#111,#292929)";
+
+    }
+
+
+    /* PHONE */
+
+    const phone =
+        cleanPhone(
+            client.phone
+        );
+
+
+    if(phone){
+
+        callButton.href =
+            "tel:" +
+            phone;
+
+        callButton.style.display =
+            "flex";
+
+    }else{
+
+        callButton.style.display =
+            "none";
+
+    }
+
+
+    /* GOOGLE MAPS */
+
+    if(client.maps_link){
+
+        mapsButton.href =
+            validUrl(
+                client.maps_link
+            );
+
+        mapsButton.style.display =
+            "flex";
+
+    }else{
+
+        mapsButton.style.display =
+            "none";
+
+    }
+
+
+    /* EMAIL */
+
+    if(client.email){
+
+        emailButton.href =
+            "mailto:" +
+            client.email;
+
+        emailButton.style.display =
+            "flex";
+
+    }else{
+
+        emailButton.style.display =
+            "none";
+
+    }
+
+
+    /* ABOUT */
+
+    if(client.about){
+
+        aboutElement.textContent =
+            client.about;
+
+    }else{
+
+        aboutElement.textContent =
+            "Welcome to my digital business card.";
+
+    }
+
+
+    /* WHATSAPP */
+
+    if(client.whatsapp || client.phone){
+
+        const whatsapp =
+            whatsappPhone(
+                client.whatsapp ||
+                client.phone
+            );
+
+        if(whatsapp){
+
+            setupLink(
+                "whatsappLink",
+                "https://wa.me/" + whatsapp
+            );
+
+        }else{
+
+            setupLink(
+                "whatsappLink",
+                null
+            );
+
+        }
+
+    }else{
+
+        setupLink(
+            "whatsappLink",
+            null
+        );
+
+    }
+
+
+    /* WEBSITE */
+
+    setupLink(
+        "websiteLink",
+        client.website
+    );
+
+
+    /* INSTAGRAM */
+
+    setupLink(
+        "instagramLink",
+        client.instagram
+    );
+
+
+    /* FACEBOOK */
+
+    setupLink(
+        "facebookLink",
+        client.facebook
+    );
+
+
+    /* LINKEDIN */
+
+    setupLink(
+        "linkedinLink",
+        client.linkedin
+    );
+
+
+    /* HIDE EMPTY LINK SECTION */
+
+    const visibleLinks =
+        document.querySelectorAll(
+            "#linksSection .link:not(.hidden)"
+        );
+
+
+    if(visibleLinks.length === 0){
+
+        linksSection.style.display =
+            "none";
+
+    }else{
+
+        linksSection.style.display =
+            "block";
+
+    }
+
+
+    /* SHOW PROFILE */
+
+    loading.classList.add(
+        "hidden"
+    );
+
+    errorBox.classList.add(
+        "hidden"
+    );
+
+    profileContent.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+/* =====================================================
+   SETUP LINK
+===================================================== */
+
+function setupLink(
+    elementId,
+    url
+){
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    if(!url){
+
+        element.classList.add(
+            "hidden"
+        );
+
+        return;
+    }
+
+
+    element.href =
+        validUrl(url);
+
+
+    element.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+/* =====================================================
+   SAVE CONTACT
+===================================================== */
+
+let currentClient =
+    null;
+
+
+async function loadProfileAndSetContact(){
+
+    if(!clientId){
+        return;
+    }
+
+
+    const { data } =
+        await supabaseClient
+            .from("Clients")
+            .select("*")
+            .eq(
+                "id",
+                clientId
+            )
+            .maybeSingle();
+
+
+    if(data){
+
+        currentClient =
+            data;
+
+    }
+
+}
+
+
+saveContact.addEventListener(
+    "click",
+    async function(){
+
+        if(!currentClient){
+
+            await loadProfileAndSetContact();
+
+        }
+
+
+        if(!currentClient){
+
+            alert(
+                "Contact information is not available."
+            );
+
+            return;
+        }
+
+
+        const client =
+            currentClient;
+
+
+        const vCard =
+`BEGIN:VCARD
+VERSION:3.0
+FN:${client.name || ""}
+ORG:${client.company || ""}
+TITLE:${client.job || ""}
+TEL;TYPE=CELL:${client.phone || client.whatsapp || ""}
+EMAIL:${client.email || ""}
+URL:${client.website || ""}
+NOTE:${client.about || ""}
+END:VCARD`;
+
+
+        const blob =
+            new Blob(
+                [vCard],
+                {
+                    type:"text/vcard;charset=utf-8"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const a =
+            document.createElement("a");
+
+
+        a.href =
+            url;
+
+
+        a.download =
+            (client.name ||
+             "contact") +
+            ".vcf";
+
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+    }
+);
+
+
+/* =====================================================
+   START
+===================================================== */
+
+loadProfile()
+    .then(
+        loadProfileAndSetContact
+    );
+
+
+</script>
+
+</body>
+
+</html>
