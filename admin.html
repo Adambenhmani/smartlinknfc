@@ -1,998 +1,519 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>SmartLink NFC - Admin</title>
-
-    <!-- SUPABASE -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-
-        body {
-
-            font-family: Arial, sans-serif;
-
-            background: #f5f6f8;
-
-            color: #111;
-
-        }
-
-
-        button,
-        input,
-        textarea {
-
-            font-family: inherit;
-
-        }
-
-
-        /* =========================
-           LOGIN
-        ========================= */
-
-        .login-page {
-
-            min-height: 100vh;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            padding: 20px;
-
-            background: #111;
-
-        }
-
-
-        .login-box {
-
-            width: 100%;
-
-            max-width: 420px;
-
-            background: white;
-
-            padding: 35px;
-
-            border-radius: 18px;
-
-            box-shadow:
-                0 20px 50px rgba(0,0,0,0.25);
-
-        }
-
-
-        .login-logo {
-
-            text-align: center;
-
-            font-size: 27px;
-
-            font-weight: bold;
-
-            margin-bottom: 8px;
-
-        }
-
-
-        .login-subtitle {
-
-            text-align: center;
-
-            color: #777;
-
-            margin-bottom: 30px;
-
-        }
-
-
-        .form-group {
-
-            margin-bottom: 18px;
-
-        }
-
-
-        .form-group label {
-
-            display: block;
-
-            font-size: 14px;
-
-            font-weight: bold;
-
-            margin-bottom: 8px;
-
-        }
-
-
-        .form-group input {
-
-            width: 100%;
-
-            padding: 14px;
-
-            border: 1px solid #ddd;
-
-            border-radius: 10px;
-
-            font-size: 15px;
-
-            outline: none;
-
-        }
-
-
-        .form-group input:focus {
-
-            border-color: #111;
-
-        }
-
-
-        .login-btn {
-
-            width: 100%;
-
-            padding: 15px;
-
-            border: none;
-
-            border-radius: 10px;
-
-            background: #111;
-
-            color: white;
-
-            font-size: 16px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-        }
-
-
-        .login-btn:disabled {
-
-            opacity: 0.6;
-
-            cursor: not-allowed;
-
-        }
-
-
-        .error {
-
-            display: none;
-
-            background: #ffe8e8;
-
-            color: #c00;
-
-            padding: 12px;
-
-            border-radius: 8px;
-
-            margin-bottom: 15px;
-
-            font-size: 14px;
-
-        }
-
-
-        /* =========================
-           DASHBOARD
-        ========================= */
-
-        .dashboard {
-
-            display: none;
-
-            min-height: 100vh;
-
-        }
-
-
-        .sidebar {
-
-            width: 240px;
-
-            background: #111;
-
-            color: white;
-
-            padding: 25px 18px;
-
-            position: fixed;
-
-            top: 0;
-
-            bottom: 0;
-
-            left: 0;
-
-        }
-
-
-        .logo {
-
-            font-size: 21px;
-
-            font-weight: bold;
-
-            margin-bottom: 40px;
-
-        }
-
-
-        .logo span {
-
-            color: #aaa;
-
-        }
-
-
-        .menu {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 8px;
-
-        }
-
-
-        .menu a {
-
-            text-decoration: none;
-
-            color: #bbb;
-
-            padding: 13px 15px;
-
-            border-radius: 10px;
-
-            display: block;
-
-        }
-
-
-        .menu a:hover,
-        .menu a.active {
-
-            background: #2a2a2a;
-
-            color: white;
-
-        }
-
-
-        .logout {
-
-            position: absolute;
-
-            bottom: 25px;
-
-            left: 18px;
-
-            right: 18px;
-
-            padding: 12px;
-
-            background: #222;
-
-            border: 1px solid #444;
-
-            color: white;
-
-            border-radius: 10px;
-
-            cursor: pointer;
-
-        }
-
-
-        .main {
-
-            margin-left: 240px;
-
-            padding: 35px;
-
-        }
-
-
-        .topbar {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            margin-bottom: 30px;
-
-        }
-
-
-        .topbar h1 {
-
-            font-size: 28px;
-
-        }
-
-
-        .topbar p {
-
-            color: #777;
-
-            margin-top: 6px;
-
-        }
-
-
-        .add-btn {
-
-            background: #111;
-
-            color: white;
-
-            border: none;
-
-            padding: 13px 20px;
-
-            border-radius: 10px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-        }
-
-
-        /* =========================
-           STAT CARDS
-        ========================= */
-
-        .cards {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 20px;
-
-            margin-bottom: 30px;
-
-        }
-
-
-        .card {
-
-            background: white;
-
-            border-radius: 15px;
-
-            padding: 24px;
-
-            box-shadow:
-                0 2px 10px rgba(0,0,0,0.05);
-
-        }
-
-
-        .card-title {
-
-            color: #777;
-
-            font-size: 14px;
-
-            margin-bottom: 12px;
-
-        }
-
-
-        .card-number {
-
-            font-size: 30px;
-
-            font-weight: bold;
-
-        }
-
-
-        /* =========================
-           CLIENTS
-        ========================= */
-
-        .clients-box {
-
-            background: white;
-
-            border-radius: 15px;
-
-            padding: 25px;
-
-            box-shadow:
-                0 2px 10px rgba(0,0,0,0.05);
-
-        }
-
-
-        .clients-header {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            margin-bottom: 20px;
-
-        }
-
-
-        .clients-header h2 {
-
-            font-size: 20px;
-
-        }
-
-
-        .search {
-
-            width: 240px;
-
-            padding: 11px 14px;
-
-            border: 1px solid #ddd;
-
-            border-radius: 9px;
-
-            outline: none;
-
-        }
-
-
-        .client-list {
-
-            display: flex;
-
-            flex-direction: column;
-
-        }
-
-
-        .client {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            padding: 18px 0;
-
-            border-top: 1px solid #eee;
-
-        }
-
-
-        .client-info {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 15px;
-
-        }
-
-
-        .avatar {
-
-            width: 48px;
-
-            height: 48px;
-
-            border-radius: 50%;
-
-            background: #eee;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 20px;
-
-            overflow: hidden;
-
-        }
-
-
-        .avatar img {
-
-            width: 100%;
-
-            height: 100%;
-
-            object-fit: cover;
-
-        }
-
-
-        .client-name {
-
-            font-weight: bold;
-
-            margin-bottom: 4px;
-
-        }
-
-
-        .client-company {
-
-            color: #777;
-
-            font-size: 13px;
-
-        }
-
-
-        .client-actions {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-
-        }
-
-
-        .status {
-
-            background: #e8f7ed;
-
-            color: #198754;
-
-            padding: 6px 10px;
-
-            border-radius: 20px;
-
-            font-size: 12px;
-
-        }
-
-
-        .view-btn {
-
-            text-decoration: none;
-
-            color: #111;
-
-            font-size: 13px;
-
-            font-weight: bold;
-
-        }
-
-
-        .empty {
-
-            padding: 40px 10px;
-
-            text-align: center;
-
-            color: #777;
-
-        }
-
-
-        /* =========================
-           MODAL
-        ========================= */
-
-        .modal {
-
-            display: none;
-
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(0,0,0,0.6);
-
-            z-index: 9999;
-
-            align-items: center;
-
-            justify-content: center;
-
-            padding: 20px;
-
-        }
-
-
-        .modal-box {
-
-            width: 100%;
-
-            max-width: 760px;
-
-            max-height: 90vh;
-
-            overflow-y: auto;
-
-            background: white;
-
-            border-radius: 16px;
-
-            padding: 30px;
-
-        }
-
-
-        .modal-header {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            margin-bottom: 22px;
-
-        }
-
-
-        .modal-header h2 {
-
-            font-size: 22px;
-
-        }
-
-
-        .modal-close {
-
-            border: none;
-
-            background: #eee;
-
-            width: 38px;
-
-            height: 38px;
-
-            border-radius: 50%;
-
-            font-size: 22px;
-
-            cursor: pointer;
-
-        }
-
-
-        .client-form {
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 14px;
-
-        }
-
-
-        .client-form input,
-        .client-form textarea {
-
-            width: 100%;
-
-            padding: 13px;
-
-            border: 1px solid #ddd;
-
-            border-radius: 9px;
-
-            font-size: 14px;
-
-            outline: none;
-
-        }
-
-
-        .client-form input:focus,
-        .client-form textarea:focus {
-
-            border-color: #111;
-
-        }
-
-
-        .client-form textarea {
-
-            grid-column: 1 / -1;
-
-            min-height: 110px;
-
-            resize: vertical;
-
-        }
-
-
-        .form-message {
-
-            display: none;
-
-            padding: 12px;
-
-            border-radius: 8px;
-
-            margin-bottom: 15px;
-
-            font-size: 14px;
-
-        }
-
-
-        .form-message.error {
-
-            background: #ffe8e8;
-
-            color: #b00000;
-
-        }
-
-
-        .form-message.success {
-
-            background: #e8f8ee;
-
-            color: #08752f;
-
-        }
-
-
-        .modal-actions {
-
-            grid-column: 1 / -1;
-
-            display: flex;
-
-            justify-content: flex-end;
-
-            gap: 10px;
-
-            margin-top: 8px;
-
-        }
-
-
-        .cancel-btn,
-        .save-client-btn {
-
-            padding: 12px 20px;
-
-            border: none;
-
-            border-radius: 9px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-
-        }
-
-
-        .cancel-btn {
-
-            background: #eee;
-
-            color: #111;
-
-        }
-
-
-        .save-client-btn {
-
-            background: #111;
-
-            color: white;
-
-        }
-
-
-        .save-client-btn:disabled {
-
-            opacity: 0.6;
-
-            cursor: not-allowed;
-
-        }
-
-
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 800px) {
-
-            .sidebar {
-
-                width: 100%;
-
-                height: auto;
-
-                position: relative;
-
-            }
-
-
-            .logout {
-
-                position: relative;
-
-                left: auto;
-
-                right: auto;
-
-                bottom: auto;
-
-                margin-top: 20px;
-
-            }
-
-
-            .main {
-
-                margin-left: 0;
-
-                padding: 20px;
-
-            }
-
-
-            .cards {
-
-                grid-template-columns: 1fr;
-
-            }
-
-
-            .topbar {
-
-                flex-direction: column;
-
-                align-items: flex-start;
-
-                gap: 15px;
-
-            }
-
-
-            .clients-header {
-
-                flex-direction: column;
-
-                align-items: flex-start;
-
-                gap: 15px;
-
-            }
-
-
-            .search {
-
-                width: 100%;
-
-            }
-
-
-            .client {
-
-                flex-direction: column;
-
-                align-items: flex-start;
-
-                gap: 15px;
-
-            }
-
-
-            .client-actions {
-
-                margin-left: 63px;
-
-            }
-
-
-            .client-form {
-
-                grid-template-columns: 1fr;
-
-            }
-
-
-            .client-form textarea,
-            .modal-actions {
-
-                grid-column: auto;
-
-            }
-
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SmartLink NFC - Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f6f8;
+    color:#111;
+}
+
+/* LOGIN */
+
+.login-page{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#111;
+    padding:20px;
+}
+
+.login-box{
+    width:100%;
+    max-width:420px;
+    background:white;
+    padding:35px;
+    border-radius:18px;
+}
+
+.login-logo{
+    text-align:center;
+    font-size:27px;
+    font-weight:bold;
+}
+
+.login-subtitle{
+    text-align:center;
+    color:#777;
+    margin:8px 0 30px;
+}
+
+.form-group{
+    margin-bottom:18px;
+}
+
+.form-group label{
+    display:block;
+    font-size:14px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.form-group input{
+    width:100%;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:15px;
+}
+
+.login-btn{
+    width:100%;
+    padding:15px;
+    border:0;
+    border-radius:10px;
+    background:#111;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.login-error{
+    display:none;
+    background:#ffe8e8;
+    color:#c00;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
+
+/* DASHBOARD */
+
+.dashboard{
+    display:none;
+    min-height:100vh;
+}
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:240px;
+    background:#111;
+    color:white;
+    padding:25px 18px;
+}
+
+.logo{
+    font-size:21px;
+    font-weight:bold;
+    margin-bottom:40px;
+}
+
+.logo span{
+    color:#999;
+}
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.menu a{
+    color:#bbb;
+    text-decoration:none;
+    padding:13px 15px;
+    border-radius:10px;
+}
+
+.menu a:hover,
+.menu a.active{
+    background:#292929;
+    color:white;
+}
+
+.logout{
+    position:absolute;
+    left:18px;
+    right:18px;
+    bottom:25px;
+    padding:12px;
+    background:#222;
+    color:white;
+    border:1px solid #444;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.main{
+    margin-left:240px;
+    padding:35px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.topbar h1{
+    font-size:28px;
+}
+
+.topbar p{
+    color:#777;
+    margin-top:6px;
+}
+
+.add-btn{
+    background:#111;
+    color:white;
+    border:0;
+    padding:13px 20px;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* CARDS */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.card{
+    background:white;
+    padding:24px;
+    border-radius:15px;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+
+.card-title{
+    color:#777;
+    font-size:14px;
+    margin-bottom:12px;
+}
+
+.card-number{
+    font-size:30px;
+    font-weight:bold;
+}
+
+/* CLIENTS */
+
+.clients-box{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+}
+
+.clients-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.search{
+    width:250px;
+    padding:11px 14px;
+    border:1px solid #ddd;
+    border-radius:9px;
+}
+
+.client{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 0;
+    border-top:1px solid #eee;
+}
+
+.client-info{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.avatar{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:#eee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    font-size:22px;
+}
+
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.client-name{
+    font-weight:bold;
+    margin-bottom:4px;
+}
+
+.client-company{
+    color:#777;
+    font-size:13px;
+}
+
+.client-actions{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.action-btn{
+    border:0;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.view-btn{
+    background:#eee;
+}
+
+.edit-btn{
+    background:#111;
+    color:white;
+}
+
+.delete-btn{
+    background:#ffe5e5;
+    color:#c00;
+}
+
+.status{
+    background:#e8f7ed;
+    color:#198754;
+    padding:6px 10px;
+    border-radius:20px;
+    font-size:12px;
+}
+
+.empty{
+    text-align:center;
+    padding:40px;
+    color:#777;
+}
+
+/* MODAL */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.6);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-box{
+    width:100%;
+    max-width:750px;
+    max-height:90vh;
+    overflow-y:auto;
+    background:white;
+    border-radius:16px;
+    padding:30px;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+}
+
+.close-btn{
+    border:0;
+    background:#eee;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.client-form{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.client-form input,
+.client-form textarea{
+    width:100%;
+    padding:13px;
+    border:1px solid #ddd;
+    border-radius:9px;
+    font-size:14px;
+}
+
+.client-form textarea{
+    grid-column:1/-1;
+    min-height:110px;
+    resize:vertical;
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+.modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:10px;
+}
+
+.cancel-btn,
+.save-btn{
+    padding:12px 20px;
+    border:0;
+    border-radius:9px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.cancel-btn{
+    background:#eee;
+}
+
+.save-btn{
+    background:#111;
+    color:white;
+}
+
+.form-message{
+    display:none;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
+
+.form-message.error{
+    display:block;
+    background:#ffe8e8;
+    color:#c00;
+}
+
+.form-message.success{
+    display:block;
+    background:#e8f8ee;
+    color:#08752f;
+}
+
+@media(max-width:800px){
+
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
+    }
+
+    .logout{
+        position:relative;
+        left:auto;
+        right:auto;
+        bottom:auto;
+        width:100%;
+        margin-top:20px;
+    }
+
+    .main{
+        margin-left:0;
+        padding:20px;
+    }
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .clients-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .search{
+        width:100%;
+    }
+
+    .client{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .client-actions{
+        margin-left:67px;
+        flex-wrap:wrap;
+    }
+
+    .client-form{
+        grid-template-columns:1fr;
+    }
+
+    .client-form textarea,
+    .full{
+        grid-column:auto;
+    }
+}
+
+</style>
 </head>
-
 
 <body>
 
+<!-- LOGIN -->
 
-<!-- =========================
-     LOGIN PAGE
-========================= -->
-
-<div
-    class="login-page"
-    id="loginPage">
-
+<div class="login-page" id="loginPage">
 
     <div class="login-box">
-
 
         <div class="login-logo">
             SmartLink NFC
         </div>
 
-
         <div class="login-subtitle">
             Admin Dashboard
         </div>
 
-
-        <div
-            class="error"
-            id="loginError">
-        </div>
-
+        <div class="login-error" id="loginError"></div>
 
         <form id="loginForm">
 
-
             <div class="form-group">
 
-                <label>
-                    Email
-                </label>
+                <label>Email</label>
 
                 <input
                     type="email"
@@ -1002,65 +523,50 @@
 
             </div>
 
-
             <div class="form-group">
 
-                <label>
-                    Password
-                </label>
+                <label>Password</label>
 
                 <input
                     type="password"
                     id="password"
-                    placeholder="••••••••"
+                    placeholder="Password"
                     required>
 
             </div>
 
-
             <button
-                type="submit"
                 class="login-btn"
-                id="loginButton">
+                id="loginButton"
+                type="submit">
 
                 Login
 
             </button>
 
-
         </form>
 
-
     </div>
-
 
 </div>
 
 
+<!-- ADD / EDIT MODAL -->
 
-<!-- =========================
-     ADD CLIENT MODAL
-========================= -->
-
-<div
-    class="modal"
-    id="clientModal">
-
+<div class="modal" id="clientModal">
 
     <div class="modal-box">
 
-
         <div class="modal-header">
 
-            <h2>
-                Add New Client
+            <h2 id="modalTitle">
+                Add Client
             </h2>
 
-
             <button
-                type="button"
-                class="modal-close"
-                id="closeClientModal">
+                class="close-btn"
+                id="closeModal"
+                type="button">
 
                 ×
 
@@ -1071,7 +577,7 @@
 
         <div
             class="form-message"
-            id="clientMessage">
+            id="formMessage">
         </div>
 
 
@@ -1085,6 +591,12 @@
                 name="name"
                 placeholder="Full Name *"
                 required>
+
+
+            <input
+                type="text"
+                name="job"
+                placeholder="Job / Position">
 
 
             <input
@@ -1120,19 +632,19 @@
             <input
                 type="text"
                 name="instagram"
-                placeholder="Instagram">
-
-
-            <input
-                type="text"
-                name="linkedin"
-                placeholder="LinkedIn">
+                placeholder="Instagram URL">
 
 
             <input
                 type="text"
                 name="facebook"
-                placeholder="Facebook">
+                placeholder="Facebook URL">
+
+
+            <input
+                type="text"
+                name="linkedin"
+                placeholder="LinkedIn URL">
 
 
             <input
@@ -1149,17 +661,16 @@
 
             <textarea
                 name="about"
-                placeholder="About the client">
+                placeholder="About / Bio">
             </textarea>
 
 
-            <div class="modal-actions">
-
+            <div class="modal-actions full">
 
                 <button
                     type="button"
                     class="cancel-btn"
-                    id="cancelClientButton">
+                    id="cancelModal">
 
                     Cancel
 
@@ -1168,49 +679,36 @@
 
                 <button
                     type="submit"
-                    class="save-client-btn"
+                    class="save-btn"
                     id="saveClientButton">
 
                     Save Client
 
                 </button>
 
-
             </div>
-
 
         </form>
 
-
     </div>
-
 
 </div>
 
 
+<!-- DASHBOARD -->
 
-<!-- =========================
-     DASHBOARD
-========================= -->
-
-<div
-    class="dashboard"
-    id="dashboard">
-
+<div class="dashboard" id="dashboard">
 
     <aside class="sidebar">
 
-
         <div class="logo">
 
-            SmartLink
-            <span>NFC</span>
+            SmartLink <span>NFC</span>
 
         </div>
 
 
         <nav class="menu">
-
 
             <a
                 href="#"
@@ -1220,13 +718,11 @@
 
             </a>
 
-
             <a href="#clients">
 
                 👥 Clients
 
             </a>
-
 
             <a href="#">
 
@@ -1234,20 +730,11 @@
 
             </a>
 
-
             <a href="#">
 
                 📊 Analytics
 
             </a>
-
-
-            <a href="#">
-
-                ⚙️ Settings
-
-            </a>
-
 
         </nav>
 
@@ -1260,16 +747,12 @@
 
         </button>
 
-
     </aside>
-
 
 
     <main class="main">
 
-
         <div class="topbar">
-
 
             <div>
 
@@ -1285,23 +768,20 @@
 
 
             <button
-                type="button"
                 class="add-btn"
-                id="addClientButton">
+                id="addClientButton"
+                type="button">
 
                 + Add Client
 
             </button>
 
-
         </div>
-
 
 
         <!-- STATISTICS -->
 
         <div class="cards">
-
 
             <div class="card">
 
@@ -1353,9 +833,7 @@
 
             </div>
 
-
         </div>
-
 
 
         <!-- CLIENTS -->
@@ -1364,21 +842,16 @@
             class="clients-box"
             id="clients">
 
-
             <div class="clients-header">
-
 
                 <h2>
                     Clients
                 </h2>
 
-
                 <input
-                    type="text"
                     class="search"
                     id="searchClient"
                     placeholder="Search client...">
-
 
             </div>
 
@@ -1393,159 +866,111 @@
 
             </div>
 
-
         </div>
 
-
     </main>
-
 
 </div>
 
 
-
 <script>
 
-
-/* =========================
+/* =========================================================
    SUPABASE
-========================= */
-
+========================================================= */
 
 const SUPABASE_URL =
     "https://sxnthstllporbicsdbjk.supabase.co";
 
-
-const SUPABASE_PUBLISHABLE_KEY =
+const SUPABASE_KEY =
     "sb_publishable_Jnbgc4Z3e4p1KvPSAggX0w_m17LC7G_";
 
 
 const supabaseClient =
-    supabase.createClient(
+    window.supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
+        SUPABASE_KEY
     );
 
 
-
-/* =========================
+/* =========================================================
    ELEMENTS
-========================= */
-
+========================================================= */
 
 const loginPage =
     document.getElementById("loginPage");
 
-
 const dashboard =
     document.getElementById("dashboard");
-
 
 const loginForm =
     document.getElementById("loginForm");
 
-
 const loginButton =
     document.getElementById("loginButton");
-
 
 const loginError =
     document.getElementById("loginError");
 
-
 const logoutButton =
     document.getElementById("logoutButton");
-
 
 const addClientButton =
     document.getElementById("addClientButton");
 
-
 const clientModal =
     document.getElementById("clientModal");
 
+const closeModal =
+    document.getElementById("closeModal");
 
-const closeClientModal =
-    document.getElementById("closeClientModal");
-
-
-const cancelClientButton =
-    document.getElementById("cancelClientButton");
-
+const cancelModal =
+    document.getElementById("cancelModal");
 
 const clientForm =
     document.getElementById("clientForm");
 
-
 const saveClientButton =
     document.getElementById("saveClientButton");
 
+const formMessage =
+    document.getElementById("formMessage");
 
-const clientMessage =
-    document.getElementById("clientMessage");
-
+const modalTitle =
+    document.getElementById("modalTitle");
 
 const clientList =
     document.getElementById("clientList");
 
-
 const searchClient =
     document.getElementById("searchClient");
-
 
 const totalClients =
     document.getElementById("totalClients");
 
-
 const activeProfiles =
     document.getElementById("activeProfiles");
-
 
 const nfcCards =
     document.getElementById("nfcCards");
 
 
+let clients = [];
 
-/* =========================
-   LOGIN / DASHBOARD
-========================= */
-
-
-function showDashboard() {
-
-    loginPage.style.display = "none";
-
-    dashboard.style.display = "block";
-
-    loadClients();
-
-}
+let editingClientId = null;
 
 
-function showLogin() {
-
-    loginPage.style.display = "flex";
-
-    dashboard.style.display = "none";
-
-}
-
-
-
-/* =========================
+/* =========================================================
    LOGIN
-========================= */
-
+========================================================= */
 
 loginForm.addEventListener(
     "submit",
-    async function(event) {
+    async function(event){
 
         event.preventDefault();
 
-
         loginError.style.display = "none";
-
 
         loginButton.disabled = true;
 
@@ -1567,16 +992,17 @@ loginForm.addEventListener(
 
 
         const { error } =
-            await supabaseClient.auth.signInWithPassword({
+            await supabaseClient.auth
+                .signInWithPassword({
 
-                email: email,
+                    email: email,
 
-                password: password
+                    password: password
 
-            });
+                });
 
 
-        if (error) {
+        if(error){
 
             loginError.textContent =
                 error.message;
@@ -1584,16 +1010,13 @@ loginForm.addEventListener(
             loginError.style.display =
                 "block";
 
-
             loginButton.disabled =
                 false;
 
             loginButton.textContent =
                 "Login";
 
-
             return;
-
         }
 
 
@@ -1610,15 +1033,61 @@ loginForm.addEventListener(
 );
 
 
+/* =========================================================
+   SESSION
+========================================================= */
 
-/* =========================
+async function checkSession(){
+
+    const { data } =
+        await supabaseClient.auth
+            .getSession();
+
+
+    if(data.session){
+
+        showDashboard();
+
+    }else{
+
+        showLogin();
+
+    }
+
+}
+
+
+function showDashboard(){
+
+    loginPage.style.display =
+        "none";
+
+    dashboard.style.display =
+        "block";
+
+    loadClients();
+
+}
+
+
+function showLogin(){
+
+    loginPage.style.display =
+        "flex";
+
+    dashboard.style.display =
+        "none";
+
+}
+
+
+/* =========================================================
    LOGOUT
-========================= */
-
+========================================================= */
 
 logoutButton.addEventListener(
     "click",
-    async function() {
+    async function(){
 
         await supabaseClient.auth.signOut();
 
@@ -1628,53 +1097,25 @@ logoutButton.addEventListener(
 );
 
 
-
-/* =========================
-   SESSION
-========================= */
-
-
-async function checkSession() {
-
-    const { data } =
-        await supabaseClient.auth.getSession();
-
-
-    if (data.session) {
-
-        showDashboard();
-
-    } else {
-
-        showLogin();
-
-    }
-
-}
-
-
-
-/* =========================
-   ADD CLIENT MODAL
-========================= */
-
+/* =========================================================
+   OPEN ADD CLIENT
+========================================================= */
 
 addClientButton.addEventListener(
     "click",
-    function() {
+    function(){
 
-        clientMessage.style.display =
-            "none";
+        editingClientId = null;
 
-        clientMessage.textContent =
-            "";
+        modalTitle.textContent =
+            "Add Client";
 
-        clientMessage.className =
-            "form-message";
-
+        saveClientButton.textContent =
+            "Save Client";
 
         clientForm.reset();
 
+        hideMessage();
 
         clientModal.style.display =
             "flex";
@@ -1683,41 +1124,43 @@ addClientButton.addEventListener(
 );
 
 
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
 
-closeClientModal.addEventListener(
+function closeClientModal(){
+
+    clientModal.style.display =
+        "none";
+
+    editingClientId = null;
+
+    clientForm.reset();
+
+    hideMessage();
+
+}
+
+
+closeModal.addEventListener(
     "click",
-    function() {
-
-        clientModal.style.display =
-            "none";
-
-    }
+    closeClientModal
 );
 
 
-
-cancelClientButton.addEventListener(
+cancelModal.addEventListener(
     "click",
-    function() {
-
-        clientModal.style.display =
-            "none";
-
-    }
+    closeClientModal
 );
-
 
 
 clientModal.addEventListener(
     "click",
-    function(event) {
+    function(event){
 
-        if (
-            event.target === clientModal
-        ) {
+        if(event.target === clientModal){
 
-            clientModal.style.display =
-                "none";
+            closeClientModal();
 
         }
 
@@ -1725,15 +1168,13 @@ clientModal.addEventListener(
 );
 
 
-
-/* =========================
-   SAVE CLIENT
-========================= */
-
+/* =========================================================
+   SAVE / UPDATE CLIENT
+========================================================= */
 
 clientForm.addEventListener(
     "submit",
-    async function(event) {
+    async function(event){
 
         event.preventDefault();
 
@@ -1745,8 +1186,7 @@ clientForm.addEventListener(
             "Saving...";
 
 
-        clientMessage.style.display =
-            "none";
+        hideMessage();
 
 
         const formData =
@@ -1756,116 +1196,103 @@ clientForm.addEventListener(
         const client = {
 
             name:
-                formData.get("name")
-                ?.trim() || null,
+                formData.get("name")?.trim() || null,
+
+            job:
+                formData.get("job")?.trim() || null,
 
             company:
-                formData.get("company")
-                ?.trim() || null,
+                formData.get("company")?.trim() || null,
 
             phone:
-                formData.get("phone")
-                ?.trim() || null,
+                formData.get("phone")?.trim() || null,
 
             whatsapp:
-                formData.get("whatsapp")
-                ?.trim() || null,
+                formData.get("whatsapp")?.trim() || null,
 
             email:
-                formData.get("email")
-                ?.trim() || null,
+                formData.get("email")?.trim() || null,
 
             website:
-                formData.get("website")
-                ?.trim() || null,
+                formData.get("website")?.trim() || null,
 
             instagram:
-                formData.get("instagram")
-                ?.trim() || null,
-
-            linkedin:
-                formData.get("linkedin")
-                ?.trim() || null,
+                formData.get("instagram")?.trim() || null,
 
             facebook:
-                formData.get("facebook")
-                ?.trim() || null,
+                formData.get("facebook")?.trim() || null,
 
-            about:
-                formData.get("about")
-                ?.trim() || null,
+            linkedin:
+                formData.get("linkedin")?.trim() || null,
 
             photo:
-                formData.get("photo")
-                ?.trim() || null,
+                formData.get("photo")?.trim() || null,
 
             cover:
-                formData.get("cover")
-                ?.trim() || null
+                formData.get("cover")?.trim() || null,
+
+            about:
+                formData.get("about")?.trim() || null
 
         };
 
 
-        const { error } =
-            await supabaseClient
-                .from("Clients")
-                .insert([client]);
+        let result;
 
 
-        if (error) {
+        if(editingClientId){
 
-            console.error(error);
+            result =
+                await supabaseClient
+                    .from("Clients")
+                    .update(client)
+                    .eq("id", editingClientId);
+
+        }else{
+
+            result =
+                await supabaseClient
+                    .from("Clients")
+                    .insert([client]);
+
+        }
 
 
-            clientMessage.textContent =
+        if(result.error){
+
+            console.error(result.error);
+
+            showMessage(
                 "Error: " +
-                error.message;
-
-
-            clientMessage.className =
-                "form-message error";
-
-
-            clientMessage.style.display =
-                "block";
-
+                result.error.message,
+                "error"
+            );
 
             saveClientButton.disabled =
                 false;
 
             saveClientButton.textContent =
-                "Save Client";
-
+                editingClientId
+                    ? "Update Client"
+                    : "Save Client";
 
             return;
-
         }
 
 
-        clientMessage.textContent =
-            "Client added successfully!";
-
-
-        clientMessage.className =
-            "form-message success";
-
-
-        clientMessage.style.display =
-            "block";
+        showMessage(
+            editingClientId
+                ? "Client updated successfully!"
+                : "Client added successfully!",
+            "success"
+        );
 
 
         await loadClients();
 
 
         setTimeout(
-            function() {
-
-                clientModal.style.display =
-                    "none";
-
-                clientForm.reset();
-
-            },
+            closeClientModal,
             700
         );
 
@@ -1880,17 +1307,11 @@ clientForm.addEventListener(
 );
 
 
-
-/* =========================
+/* =========================================================
    LOAD CLIENTS
-========================= */
+========================================================= */
 
-
-let allClients = [];
-
-
-async function loadClients() {
-
+async function loadClients(){
 
     const { data, error } =
         await supabaseClient
@@ -1899,111 +1320,77 @@ async function loadClients() {
             .order(
                 "created_at",
                 {
-                    ascending: false
+                    ascending:false
                 }
             );
 
 
-    if (error) {
+    if(error){
 
         console.error(error);
 
-
         clientList.innerHTML = `
-
             <div class="empty">
-
-                Error loading clients:
+                Error loading clients:<br>
                 ${escapeHtml(error.message)}
-
             </div>
-
         `;
 
         return;
-
     }
 
 
-    allClients = data || [];
+    clients =
+        data || [];
 
 
     totalClients.textContent =
-        allClients.length;
+        clients.length;
 
 
     activeProfiles.textContent =
-        allClients.filter(
-            client => client.active !== false
-        ).length;
+        clients.length;
 
 
     nfcCards.textContent =
-        allClients.filter(
-            client => client.nfc_uid
-        ).length;
+        0;
 
 
-    renderClients(allClients);
+    renderClients(clients);
 
 }
 
 
-
-/* =========================
+/* =========================================================
    RENDER CLIENTS
-========================= */
+========================================================= */
 
+function renderClients(list){
 
-function renderClients(clients) {
-
-
-    if (!clients.length) {
+    if(!list.length){
 
         clientList.innerHTML = `
-
             <div class="empty">
-
-                No clients yet.
-
-                <br><br>
-
-                Click
-                <strong>+ Add Client</strong>
-                to create your first client.
-
+                No clients found.
             </div>
-
         `;
 
         return;
-
     }
 
 
     clientList.innerHTML =
-        clients.map(
-            client => {
-
-
-                const photo =
-                    client.photo;
-
+        list.map(
+            function(client){
 
                 const avatar =
-                    photo
-
+                    client.photo
                     ?
-
-                    `
-                    <img
-                        src="${escapeAttribute(photo)}"
-                        alt="">
-                    `
-
+                    `<img
+                        src="${escapeAttribute(client.photo)}"
+                        alt="">`
                     :
-
-                    `👤`;
+                    "👤";
 
 
                 return `
@@ -2013,29 +1400,24 @@ function renderClients(clients) {
                         <div class="client-info">
 
                             <div class="avatar">
-
                                 ${avatar}
-
                             </div>
-
 
                             <div>
 
                                 <div class="client-name">
-
                                     ${escapeHtml(
-                                        client.name || "Unnamed"
+                                        client.name ||
+                                        "Unnamed Client"
                                     )}
-
                                 </div>
 
-
                                 <div class="client-company">
-
                                     ${escapeHtml(
-                                        client.company || "No company"
+                                        client.company ||
+                                        client.job ||
+                                        "No company"
                                     )}
-
                                 </div>
 
                             </div>
@@ -2046,20 +1428,35 @@ function renderClients(clients) {
                         <div class="client-actions">
 
                             <span class="status">
-
                                 Active
-
                             </span>
 
 
-                            <a
-                                href="index.html?id=${encodeURIComponent(client.id)}"
-                                target="_blank"
-                                class="view-btn">
+                            <button
+                                class="action-btn view-btn"
+                                onclick="viewClient('${client.id}')">
 
-                                View
+                                👁 View
 
-                            </a>
+                            </button>
+
+
+                            <button
+                                class="action-btn edit-btn"
+                                onclick="editClient('${client.id}')">
+
+                                ✏️ Edit
+
+                            </button>
+
+
+                            <button
+                                class="action-btn delete-btn"
+                                onclick="deleteClient('${client.id}')">
+
+                                🗑 Delete
+
+                            </button>
 
                         </div>
 
@@ -2073,16 +1470,191 @@ function renderClients(clients) {
 }
 
 
+/* =========================================================
+   VIEW CLIENT
+========================================================= */
 
-/* =========================
+function viewClient(id){
+
+    const url =
+        window.location.origin +
+        window.location.pathname.replace(
+            "admin.html",
+            "index.html"
+        ) +
+        "?id=" +
+        encodeURIComponent(id);
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+}
+
+
+/* =========================================================
+   EDIT CLIENT
+========================================================= */
+
+function editClient(id){
+
+    const client =
+        clients.find(
+            function(item){
+                return String(item.id) === String(id);
+            }
+        );
+
+
+    if(!client){
+
+        alert("Client not found.");
+
+        return;
+    }
+
+
+    editingClientId =
+        id;
+
+
+    modalTitle.textContent =
+        "Edit Client";
+
+
+    saveClientButton.textContent =
+        "Update Client";
+
+
+    clientForm.elements["name"].value =
+        client.name || "";
+
+
+    clientForm.elements["job"].value =
+        client.job || "";
+
+
+    clientForm.elements["company"].value =
+        client.company || "";
+
+
+    clientForm.elements["phone"].value =
+        client.phone || "";
+
+
+    clientForm.elements["whatsapp"].value =
+        client.whatsapp || "";
+
+
+    clientForm.elements["email"].value =
+        client.email || "";
+
+
+    clientForm.elements["website"].value =
+        client.website || "";
+
+
+    clientForm.elements["instagram"].value =
+        client.instagram || "";
+
+
+    clientForm.elements["facebook"].value =
+        client.facebook || "";
+
+
+    clientForm.elements["linkedin"].value =
+        client.linkedin || "";
+
+
+    clientForm.elements["photo"].value =
+        client.photo || "";
+
+
+    clientForm.elements["cover"].value =
+        client.cover || "";
+
+
+    clientForm.elements["about"].value =
+        client.about || "";
+
+
+    hideMessage();
+
+
+    clientModal.style.display =
+        "flex";
+
+}
+
+
+/* =========================================================
+   DELETE CLIENT
+========================================================= */
+
+async function deleteClient(id){
+
+    const client =
+        clients.find(
+            function(item){
+                return String(item.id) === String(id);
+            }
+        );
+
+
+    if(!client){
+
+        alert("Client not found.");
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "Delete " +
+            (client.name || "this client") +
+            "?"
+        );
+
+
+    if(!confirmed){
+
+        return;
+    }
+
+
+    const { error } =
+        await supabaseClient
+            .from("Clients")
+            .delete()
+            .eq("id", id);
+
+
+    if(error){
+
+        alert(
+            "Error deleting client: " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    await loadClients();
+
+}
+
+
+/* =========================================================
    SEARCH
-========================= */
-
+========================================================= */
 
 searchClient.addEventListener(
     "input",
-    function() {
-
+    function(){
 
         const query =
             searchClient.value
@@ -2090,49 +1662,49 @@ searchClient.addEventListener(
                 .trim();
 
 
-        if (!query) {
+        if(!query){
 
-            renderClients(allClients);
+            renderClients(clients);
 
             return;
-
         }
 
 
         const filtered =
-            allClients.filter(
-                client => {
-
-
-                    const name =
-                        client.name || "";
-
-
-                    const company =
-                        client.company || "";
-
-
-                    const email =
-                        client.email || "";
-
+            clients.filter(
+                function(client){
 
                     return (
 
-                        name
-                            .toLowerCase()
-                            .includes(query)
+                        String(
+                            client.name || ""
+                        )
+                        .toLowerCase()
+                        .includes(query)
 
                         ||
 
-                        company
-                            .toLowerCase()
-                            .includes(query)
+                        String(
+                            client.company || ""
+                        )
+                        .toLowerCase()
+                        .includes(query)
 
                         ||
 
-                        email
-                            .toLowerCase()
-                            .includes(query)
+                        String(
+                            client.email || ""
+                        )
+                        .toLowerCase()
+                        .includes(query)
+
+                        ||
+
+                        String(
+                            client.phone || ""
+                        )
+                        .toLowerCase()
+                        .includes(query)
 
                     );
 
@@ -2146,50 +1718,63 @@ searchClient.addEventListener(
 );
 
 
+/* =========================================================
+   MESSAGES
+========================================================= */
 
-/* =========================
-   SECURITY HELPERS
-========================= */
+function showMessage(message,type){
 
+    formMessage.textContent =
+        message;
 
-function escapeHtml(value) {
-
-    return String(value)
-
-        .replaceAll("&", "&amp;")
-
-        .replaceAll("<", "&lt;")
-
-        .replaceAll(">", "&gt;")
-
-        .replaceAll('"', "&quot;")
-
-        .replaceAll("'", "&#039;");
+    formMessage.className =
+        "form-message " +
+        type;
 
 }
 
 
+function hideMessage(){
 
-function escapeAttribute(value) {
+    formMessage.textContent =
+        "";
+
+    formMessage.className =
+        "form-message";
+
+}
+
+
+/* =========================================================
+   SECURITY
+========================================================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+function escapeAttribute(value){
 
     return escapeHtml(value);
 
 }
 
 
-
-/* =========================
+/* =========================================================
    START
-========================= */
-
+========================================================= */
 
 checkSession();
 
-
 </script>
 
-
 </body>
-
 </html>
-```
