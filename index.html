@@ -217,41 +217,26 @@ body{
 }
 
 
-/* ACTION BUTTONS */
-.action-buttons{
+
+/* MAPS ACTION STYLE */
+.actions{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:12px;
-    margin:22px 0 28px;
-}
-.action-button{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    min-height:92px;
-    padding:14px 8px;
-    border-radius:14px;
-    background:#f5f5f5;
-    color:#111;
-    text-decoration:none;
-    font-weight:600;
-    border:1px solid #e8e8e8;
-    transition:transform .15s ease,box-shadow .15s ease;
-}
-.action-button:hover{
-    transform:translateY(-2px);
-    box-shadow:0 6px 18px rgba(0,0,0,.08);
-}
-.action-icon{font-size:28px;line-height:1;margin-bottom:9px}
-.action-label{font-size:15px}
-@media(max-width:520px){
-    .action-buttons{gap:8px}
-    .action-button{min-height:82px;padding:12px 5px}
-    .action-icon{font-size:24px}
-    .action-label{font-size:14px}
 }
 
+.action{
+    min-height:92px;
+}
+
+@media(max-width:520px){
+    .actions{
+        gap:8px;
+    }
+    .action{
+        min-height:82px;
+    }
+}
 </style>
 
 </head>
@@ -359,38 +344,17 @@ body{
 
         </button>
 
-        <div class="action-buttons" id="actionButtons">
-            <a class="action-button" id="callButton" href="#">
-                <span class="action-icon">📞</span>
-                <span class="action-label">Call</span>
-            </a>
-            <a class="action-button" id="mapsButton" href="#" target="_blank" rel="noopener noreferrer">
-                <span class="action-icon">📍</span>
-                <span class="action-label">Google Maps</span>
-            </a>
-            <a class="action-button" id="emailButton" href="#">
-                <span class="action-icon">✉️</span>
-                <span class="action-label">Email</span>
-            </a>
-        </div>
-
-
 
         <!-- ACTIONS -->
 
         <div class="actions">
-
-
-            <!-- CALL -->
 
             <a
                 class="action"
                 id="callButton"
                 href="#">
 
-                <div class="action-icon">
-                    📞
-                </div>
+                <div class="action-icon">📞</div>
 
                 <div class="action-text">
                     Call
@@ -399,42 +363,34 @@ body{
             </a>
 
 
-            <!-- WHATSAPP -->
-
             <a
                 class="action"
-                id="whatsappButton"
+                id="mapsButton"
                 href="#"
-                target="_blank">
+                target="_blank"
+                rel="noopener noreferrer">
 
-                <div class="action-icon">
-                    💬
-                </div>
+                <div class="action-icon">📍</div>
 
                 <div class="action-text">
-                    WhatsApp
+                    Google Maps
                 </div>
 
             </a>
 
-
-            <!-- EMAIL -->
 
             <a
                 class="action"
                 id="emailButton"
                 href="#">
 
-                <div class="action-icon">
-                    ✉️
-                </div>
+                <div class="action-icon">✉️</div>
 
                 <div class="action-text">
                     Email
                 </div>
 
             </a>
-
 
         </div>
 
@@ -468,6 +424,18 @@ body{
             </h2>
 
             <div class="links">
+
+
+                <a
+                    class="link hidden"
+                    id="whatsappLink"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer">
+
+                    💬 WhatsApp
+
+                </a>
 
 
                 <a
@@ -592,9 +560,6 @@ const aboutElement =
 const callButton =
     document.getElementById("callButton");
 
-const whatsappButton =
-    document.getElementById("whatsappButton");
-
 const emailButton =
     document.getElementById("emailButton");
 
@@ -606,15 +571,6 @@ const aboutSection =
 
 const linksSection =
     document.getElementById("linksSection");
-
-const callButton =
-    document.getElementById("callButton");
-
-const mapsButton =
-    document.getElementById("mapsButton");
-
-const emailButton =
-    document.getElementById("emailButton");
 
 
 /* =====================================================
@@ -922,27 +878,21 @@ function renderProfile(client){
     }
 
 
-    /* WHATSAPP */
+    /* GOOGLE MAPS */
 
-    const whatsapp =
-        whatsappPhone(
-            client.whatsapp ||
-            client.phone
-        );
+    if(client.maps_link){
 
+        mapsButton.href =
+            validUrl(
+                client.maps_link
+            );
 
-    if(whatsapp){
-
-        whatsappButton.href =
-            "https://wa.me/" +
-            whatsapp;
-
-        whatsappButton.style.display =
+        mapsButton.style.display =
             "flex";
 
     }else{
 
-        whatsappButton.style.display =
+        mapsButton.style.display =
             "none";
 
     }
@@ -982,6 +932,42 @@ function renderProfile(client){
     }
 
 
+    /* WHATSAPP */
+
+    if(client.whatsapp || client.phone){
+
+        const whatsapp =
+            whatsappPhone(
+                client.whatsapp ||
+                client.phone
+            );
+
+        if(whatsapp){
+
+            setupLink(
+                "whatsappLink",
+                "https://wa.me/" + whatsapp
+            );
+
+        }else{
+
+            setupLink(
+                "whatsappLink",
+                null
+            );
+
+        }
+
+    }else{
+
+        setupLink(
+            "whatsappLink",
+            null
+        );
+
+    }
+
+
     /* WEBSITE */
 
     setupLink(
@@ -1012,31 +998,6 @@ function renderProfile(client){
         "linkedinLink",
         client.linkedin
     );
-
-
-
-    /* ACTION BUTTONS LOGIC */
-
-    if(client.phone){
-        callButton.href = "tel:" + client.phone.replace(/[^0-9+]/g,"");
-        callButton.classList.remove("hidden");
-    }else{
-        callButton.classList.add("hidden");
-    }
-
-    if(client.maps_link){
-        mapsButton.href = validUrl(client.maps_link);
-        mapsButton.classList.remove("hidden");
-    }else{
-        mapsButton.classList.add("hidden");
-    }
-
-    if(client.email){
-        emailButton.href = "mailto:" + client.email;
-        emailButton.classList.remove("hidden");
-    }else{
-        emailButton.classList.add("hidden");
-    }
 
 
     /* HIDE EMPTY LINK SECTION */
