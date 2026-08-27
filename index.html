@@ -757,6 +757,15 @@ function validUrl(url){
    LOAD PROFILE
 ===================================================== */
 
+
+function escapeVCard(value){
+    return String(value || "")
+        .replace(/\\/g, "\\\\")
+        .replace(/\r?\n/g, "\\n")
+        .replace(/;/g, "\\;")
+        .replace(/,/g, "\\,");
+}
+
 async function loadProfile(){
 
     if(!clientId){
@@ -1203,13 +1212,21 @@ saveContact.addEventListener(
         const vCard =
 `BEGIN:VCARD
 VERSION:3.0
-FN:${client.name || ""}
-ORG:${client.company || ""}
-TITLE:${client.job || ""}
-TEL;TYPE=CELL:${client.phone || client.whatsapp || ""}
-EMAIL:${client.email || ""}
-URL:${client.website || ""}
-NOTE:${client.about || ""}
+N:${escapeVCard(client.name || "")};;;
+FN:${escapeVCard(client.name || "")}
+ORG:${escapeVCard(client.company || "")}
+TITLE:${escapeVCard(client.job || "")}
+TEL;TYPE=CELL,VOICE:${escapeVCard(client.phone || "")}
+TEL;TYPE=WORK:${escapeVCard(client.whatsapp || "")}
+EMAIL;TYPE=INTERNET:${escapeVCard(client.email || "")}
+URL;TYPE=WORK:${escapeVCard(client.website || "")}
+X-SOCIALPROFILE;TYPE=instagram:${escapeVCard(client.instagram || "")}
+X-SOCIALPROFILE;TYPE=facebook:${escapeVCard(client.facebook || "")}
+X-SOCIALPROFILE;TYPE=linkedin:${escapeVCard(client.linkedin || "")}
+X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard(client.whatsapp ? "https://wa.me/" + whatsappPhone(client.whatsapp) : "")}
+X-ABLabel:Google Maps
+X-ABURL:${escapeVCard(client.maps_link || "")}
+NOTE:${escapeVCard(client.about || "")}
 END:VCARD`;
 
 
