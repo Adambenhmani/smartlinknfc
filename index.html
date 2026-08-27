@@ -656,12 +656,18 @@ const pathParts =
         .split("/")
         .filter(Boolean);
 
+// Supports:
+// /smartlinknfc/samir
+// /smartlinknfc/index.html/samir
 const slugFromPath =
     pathParts.length >= 2 &&
-    pathParts[0].toLowerCase() === "smartlinknfc" &&
-    pathParts[1].toLowerCase() !== "index.html" &&
-    pathParts[1].toLowerCase() !== "admin.html"
-        ? decodeURIComponent(pathParts[1])
+    pathParts[0].toLowerCase() === "smartlinknfc"
+        ? (
+            pathParts[1].toLowerCase() === "index.html" ||
+            pathParts[1].toLowerCase() === "admin.html"
+                ? (pathParts[2] ? decodeURIComponent(pathParts[2]) : null)
+                : decodeURIComponent(pathParts[1])
+          )
         : null;
 
 
