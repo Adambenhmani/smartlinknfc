@@ -166,6 +166,20 @@ body{
     text-decoration:none;
 }
 
+.maps-button{
+    display:block;
+    width:100%;
+    padding:16px;
+    margin-top:20px;
+    background:#111;
+    color:white;
+    border-radius:12px;
+    text-decoration:none;
+    text-align:center;
+    font-size:17px;
+    font-weight:700;
+}
+
 .footer{
     text-align:center;
     color:#999;
@@ -387,6 +401,20 @@ body{
         </div>
 
 
+        <!-- GOOGLE MAPS LOCATION -->
+
+        <a
+            class="maps-button hidden"
+            id="mapsButton"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer">
+
+            📍 View Location
+
+        </a>
+
+
         <!-- ABOUT -->
 
         <div
@@ -554,6 +582,9 @@ const aboutSection =
 
 const linksSection =
     document.getElementById("linksSection");
+
+const mapsButton =
+    document.getElementById("mapsButton");
 
 
 /* =====================================================
@@ -951,6 +982,26 @@ function renderProfile(client){
         "linkedinLink",
         client.linkedin
     );
+
+
+    /* GOOGLE MAPS */
+
+    if(client.maps_link){
+
+        mapsButton.href =
+            validUrl(client.maps_link);
+
+        mapsButton.classList.remove(
+            "hidden"
+        );
+
+    }else{
+
+        mapsButton.classList.add(
+            "hidden"
+        );
+
+    }
 
 
     /* HIDE EMPTY LINK SECTION */
