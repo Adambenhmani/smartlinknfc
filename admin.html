@@ -2031,7 +2031,13 @@ clientForm.addEventListener(
                 const { error } =
                     await supabaseClient
                         .from("Clients")
-                        .update(client)
+                        .update({
+                            ...client,
+                            theme_color:
+                                normalizeThemeColor(
+                                    themeColor.value
+                                )
+                        })
                         .eq(
                             "id",
                             editingClientId
