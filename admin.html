@@ -736,6 +736,18 @@ body {
             </div>
 
 
+            <div>
+
+                <label>📍 Google Maps Location</label>
+
+                <input
+                    type="url"
+                    name="maps_link"
+                    placeholder="https://maps.google.com/...">
+
+            </div>
+
+
             <!-- PROFILE PHOTO -->
 
             <div class="file-box">
@@ -1529,6 +1541,9 @@ clientForm.addEventListener(
                 linkedin:
                     formData.get("linkedin")?.trim() || null,
 
+                maps_link:
+                    formData.get("maps_link")?.trim() || null,
+
                 about:
                     formData.get("about")?.trim() || null
 
@@ -1977,6 +1992,10 @@ function editClient(id){
 
     clientForm.elements["linkedin"].value =
         client.linkedin || "";
+
+
+    clientForm.elements["maps_link"].value =
+        client.maps_link || "";
 
 
     clientForm.elements["about"].value =
