@@ -560,23 +560,6 @@ body{
 
         </div>
 
-
-
-        <!-- PHOTOS -->
-        <div
-            class="section photos-section hidden"
-            id="photosSection">
-
-            <h2>Photos</h2>
-
-            <div
-                class="photos-gallery"
-                id="photosGallery">
-            </div>
-
-        </div>
-
-
         <!-- LINKS -->
 
         <div
@@ -677,6 +660,20 @@ body{
 
 </div>
 
+
+        <!-- PHOTOS -->
+        <div
+            class="section photos-section hidden"
+            id="photosSection">
+
+            <h2>Photos</h2>
+
+            <div
+                class="photos-gallery"
+                id="photosGallery">
+            </div>
+
+        </div>
 
     <div class="footer">
 
@@ -1291,7 +1288,7 @@ function renderProfile(client){
         }
     }
 
-    photos = photos.slice(0,4);
+    photos = photos.slice(0,10);
 
     if(photos.length){
 
