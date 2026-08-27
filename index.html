@@ -22,28 +22,29 @@
         }
 
         .profile {
-            max-width: 430px;
+            max-width: 540px;
             min-height: 100vh;
             margin: auto;
             background: white;
             text-align: center;
             padding-bottom: 40px;
+            box-shadow: 0 0 30px rgba(0,0,0,.08);
         }
 
         .cover {
-            height: 150px;
+            height: 190px;
             background: linear-gradient(135deg, #111, #333);
             background-size: cover;
             background-position: center;
         }
 
         .photo {
-            width: 110px;
-            height: 110px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             background: #ddd;
             border: 5px solid white;
-            margin: -55px auto 15px;
+            margin: -60px auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -58,7 +59,7 @@
         }
 
         h1 {
-            font-size: 26px;
+            font-size: 28px;
             margin-bottom: 6px;
         }
 
@@ -113,13 +114,14 @@
         }
 
         .section h2 {
-            font-size: 18px;
+            font-size: 20px;
             margin-bottom: 10px;
         }
 
         .section p {
             color: #555;
             line-height: 1.6;
+            white-space: pre-line;
         }
 
         .social {
@@ -143,18 +145,24 @@
             color: #999;
         }
 
-        .loading {
+        .loading,
+        .error {
             padding: 80px 20px;
-            color: #666;
         }
 
         .error {
-            padding: 80px 20px;
             color: #c00;
         }
 
         .hidden {
             display: none !important;
+        }
+
+        @media (max-width: 600px) {
+            .profile {
+                width: 100%;
+                box-shadow: none;
+            }
         }
     </style>
 </head>
@@ -165,9 +173,7 @@
 
     <div class="cover" id="cover"></div>
 
-    <div class="photo" id="photo">
-        👤
-    </div>
+    <div class="photo" id="photo">👤</div>
 
     <h1 id="name">Loading...</h1>
 
@@ -188,7 +194,7 @@
             Call
         </a>
 
-        <a class="btn" id="whatsappBtn" href="#" target="_blank">
+        <a class="btn" id="whatsappBtn" href="#" target="_blank" rel="noopener">
             <span class="icon">💬</span>
             WhatsApp
         </a>
@@ -201,30 +207,28 @@
     </div>
 
     <div class="section">
-
         <h2>About</h2>
 
         <p id="about">
             Welcome to my digital business card.
         </p>
-
     </div>
 
     <div class="social">
 
-        <a id="websiteBtn" href="#" target="_blank" class="hidden">
+        <a id="websiteBtn" href="#" target="_blank" rel="noopener" class="hidden">
             🌐 Website
         </a>
 
-        <a id="instagramBtn" href="#" target="_blank" class="hidden">
+        <a id="instagramBtn" href="#" target="_blank" rel="noopener" class="hidden">
             📸 Instagram
         </a>
 
-        <a id="linkedinBtn" href="#" target="_blank" class="hidden">
+        <a id="linkedinBtn" href="#" target="_blank" rel="noopener" class="hidden">
             💼 LinkedIn
         </a>
 
-        <a id="facebookBtn" href="#" target="_blank" class="hidden">
+        <a id="facebookBtn" href="#" target="_blank" rel="noopener" class="hidden">
             📘 Facebook
         </a>
 
@@ -236,33 +240,73 @@
 
 </div>
 
-
 <script>
 
     // =========================================================
     // SUPABASE CONFIGURATION
     // =========================================================
 
-    const SUPABASE_URL = "PUT_YOUR_SUPABASE_URL_HERE";
+    const SUPABASE_URL =
+        "https://sxnthstllporbicsdbjk.supabase.co";
 
-    const SUPABASE_KEY = "sb_publishable_Jnbgc4Z3e4p1KvPSAggX0w_m17LC7G_";
+    const SUPABASE_KEY =
+        "sb_publishable_Jnbgc4Z3e4p1KvPSAggX0w_m17LC7G_";
 
-
-    const supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
 
 
     // =========================================================
     // GET CLIENT ID FROM URL
-    // Example:
-    // https://adam...github.io/smartlinknfc/?id=UUID
     // =========================================================
 
-    const params = new URLSearchParams(window.location.search);
+    const params =
+        new URLSearchParams(window.location.search);
 
-    const clientId = params.get("id");
+    const clientId =
+        params.get("id");
+
+
+    // =========================================================
+    // HELPERS
+    // =========================================================
+
+    function showError(message) {
+
+        document.getElementById("name").innerText =
+            "Profile not found";
+
+        document.getElementById("job").innerText =
+            message;
+
+        document.getElementById("company").innerText =
+            "";
+
+        document.getElementById("about").innerText =
+            "";
+    }
+
+
+    function normalizeUrl(url) {
+
+        if (!url) return "";
+
+        url = String(url).trim();
+
+        if (
+            url.startsWith("http://") ||
+            url.startsWith("https://") ||
+            url.startsWith("mailto:") ||
+            url.startsWith("tel:")
+        ) {
+            return url;
+        }
+
+        return "https://" + url;
+    }
 
 
     // =========================================================
@@ -273,49 +317,67 @@
 
         try {
 
-            let query = supabaseClient
-                .from("Clients")
-                .select("*");
+            if (!clientId) {
 
-            // If URL contains ?id=UUID
-            if (clientId) {
-
-                query = query.eq("id", clientId);
-
-            } else {
-
-                // For testing:
-                // If no ID is provided, load first client
-                query = query.limit(1);
-
-            }
-
-            const { data, error } = await query.single();
-
-            if (error) {
-
-                console.error(error);
-
-                document.getElementById("name").innerText =
-                    "Profile not found";
-
-                document.getElementById("job").innerText =
-                    "Please check the profile link";
+                showError(
+                    "No profile ID was provided in the link."
+                );
 
                 return;
             }
+
+
+            const { data, error } =
+                await supabaseClient
+                    .from("Clients")
+                    .select("*")
+                    .eq("id", clientId)
+                    .maybeSingle();
+
+
+            if (error) {
+
+                console.error(
+                    "Supabase error:",
+                    error
+                );
+
+                showError(
+                    "Unable to load this profile. Please try again."
+                );
+
+                return;
+            }
+
+
+            if (!data) {
+
+                console.error(
+                    "No client found for ID:",
+                    clientId
+                );
+
+                showError(
+                    "This profile does not exist or is not available."
+                );
+
+                return;
+            }
+
 
             displayClient(data);
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "Unexpected error:",
+                error
+            );
 
-            document.getElementById("name").innerText =
-                "Something went wrong";
-
+            showError(
+                "Something went wrong while loading the profile."
+            );
         }
-
     }
 
 
@@ -325,24 +387,27 @@
 
     function displayClient(client) {
 
+
         // NAME
+
         document.getElementById("name").innerText =
             client.name || "SmartLink NFC";
 
 
         // COMPANY
+
         document.getElementById("company").innerText =
             client.company || "";
 
 
         // JOB
-        // If you don't have a job column,
-        // SmartLink NFC will be displayed.
+
         document.getElementById("job").innerText =
             client.job || "SmartLink NFC";
 
 
         // ABOUT
+
         document.getElementById("about").innerText =
             client.about ||
             "Welcome to my digital business card. You can contact me directly or save my contact information.";
@@ -354,11 +419,25 @@
 
         if (client.photo) {
 
-            const photo = document.getElementById("photo");
+            const photo =
+                document.getElementById("photo");
 
-            photo.innerHTML =
-                `<img src="${client.photo}" alt="${client.name || "Profile"}">`;
+            photo.innerHTML = "";
 
+            const img =
+                document.createElement("img");
+
+            img.src = client.photo;
+
+            img.alt =
+                client.name || "Profile photo";
+
+            img.onerror = function () {
+
+                photo.innerHTML = "👤";
+            };
+
+            photo.appendChild(img);
         }
 
 
@@ -368,9 +447,9 @@
 
         if (client.cover) {
 
-            document.getElementById("cover").style.backgroundImage =
+            document.getElementById("cover")
+                .style.backgroundImage =
                 `url("${client.cover}")`;
-
         }
 
 
@@ -385,8 +464,8 @@
 
         } else {
 
-            document.getElementById("callBtn").classList.add("hidden");
-
+            document.getElementById("callBtn")
+                .classList.add("hidden");
         }
 
 
@@ -397,24 +476,35 @@
         if (client.whatsapp) {
 
             let whatsappNumber =
-                client.whatsapp.replace(/\D/g, "");
+                String(client.whatsapp)
+                    .replace(/\D/g, "");
 
-            // If Moroccan number starts with 0
+
             if (whatsappNumber.startsWith("0")) {
 
                 whatsappNumber =
-                    "212" + whatsappNumber.substring(1);
-
+                    "212" +
+                    whatsappNumber.substring(1);
             }
 
-            document.getElementById("whatsappBtn").href =
-                "https://wa.me/" + whatsappNumber;
+
+            if (whatsappNumber) {
+
+                document.getElementById("whatsappBtn")
+                    .href =
+                    "https://wa.me/" +
+                    whatsappNumber;
+
+            } else {
+
+                document.getElementById("whatsappBtn")
+                    .classList.add("hidden");
+            }
 
         } else {
 
             document.getElementById("whatsappBtn")
                 .classList.add("hidden");
-
         }
 
 
@@ -431,7 +521,6 @@
 
             document.getElementById("emailBtn")
                 .classList.add("hidden");
-
         }
 
 
@@ -441,12 +530,12 @@
 
         if (client.website) {
 
-            document.getElementById("websiteBtn").href =
-                client.website;
+            document.getElementById("websiteBtn")
+                .href =
+                normalizeUrl(client.website);
 
             document.getElementById("websiteBtn")
                 .classList.remove("hidden");
-
         }
 
 
@@ -456,12 +545,12 @@
 
         if (client.instagram) {
 
-            document.getElementById("instagramBtn").href =
-                client.instagram;
+            document.getElementById("instagramBtn")
+                .href =
+                normalizeUrl(client.instagram);
 
             document.getElementById("instagramBtn")
                 .classList.remove("hidden");
-
         }
 
 
@@ -471,12 +560,12 @@
 
         if (client.linkedin) {
 
-            document.getElementById("linkedinBtn").href =
-                client.linkedin;
+            document.getElementById("linkedinBtn")
+                .href =
+                normalizeUrl(client.linkedin);
 
             document.getElementById("linkedinBtn")
                 .classList.remove("hidden");
-
         }
 
 
@@ -486,12 +575,12 @@
 
         if (client.facebook) {
 
-            document.getElementById("facebookBtn").href =
-                client.facebook;
+            document.getElementById("facebookBtn")
+                .href =
+                normalizeUrl(client.facebook);
 
             document.getElementById("facebookBtn")
                 .classList.remove("hidden");
-
         }
 
 
@@ -500,7 +589,6 @@
         // =====================================================
 
         setupContactDownload(client);
-
     }
 
 
@@ -522,32 +610,58 @@
         const email =
             client.email || "";
 
+
         const vcard =
 `BEGIN:VCARD
 VERSION:3.0
-FN:${name}
-ORG:${company}
-TEL;TYPE=CELL:${phone}
-EMAIL:${email}
+FN:${escapeVCard(name)}
+ORG:${escapeVCard(company)}
+TEL;TYPE=CELL:${escapeVCard(phone)}
+EMAIL:${escapeVCard(email)}
 END:VCARD`;
+
 
         const blob =
             new Blob(
                 [vcard],
-                { type: "text/vcard;charset=utf-8" }
+                {
+                    type:
+                        "text/vcard;charset=utf-8"
+                }
             );
+
 
         const url =
             URL.createObjectURL(blob);
 
-        const saveButton =
-            document.getElementById("saveContact");
 
-        saveButton.href = url;
+        const saveButton =
+            document.getElementById(
+                "saveContact"
+            );
+
+
+        saveButton.href =
+            url;
+
 
         saveButton.download =
-            (name || "SmartLink-NFC") + ".vcf";
+            (name || "SmartLink-NFC") +
+            ".vcf";
+    }
 
+
+    // =========================================================
+    // ESCAPE VCARD TEXT
+    // =========================================================
+
+    function escapeVCard(value) {
+
+        return String(value)
+            .replace(/\\/g, "\\\\")
+            .replace(/\n/g, "\\n")
+            .replace(/,/g, "\\,")
+            .replace(/;/g, "\\;");
     }
 
 
