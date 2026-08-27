@@ -1,10 +1,13 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SmartLink NFC - Admin Dashboard</title>
+    <title>SmartLink NFC - Admin</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         * {
@@ -19,12 +22,91 @@
             color: #111;
         }
 
-        .layout {
-            display: flex;
+        .login-page {
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #111;
         }
 
-        /* SIDEBAR */
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+        }
+
+        .login-logo {
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #111;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #111;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error {
+            display: none;
+            background: #ffe8e8;
+            color: #c00;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
 
         .sidebar {
             width: 240px;
@@ -59,20 +141,29 @@
             padding: 13px 15px;
             border-radius: 10px;
             display: block;
-            transition: 0.2s;
         }
 
-        .menu a:hover,
-        .menu a.active {
+        .menu a.active,
+        .menu a:hover {
             background: #2a2a2a;
             color: white;
         }
 
-        /* MAIN */
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            left: 18px;
+            right: 18px;
+            padding: 12px;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+        }
 
         .main {
             margin-left: 240px;
-            width: calc(100% - 240px);
             padding: 35px;
         }
 
@@ -95,13 +186,11 @@
         .add-btn {
             background: #111;
             color: white;
-            text-decoration: none;
             padding: 13px 20px;
             border-radius: 10px;
             font-weight: bold;
+            text-decoration: none;
         }
-
-        /* CARDS */
 
         .cards {
             display: grid;
@@ -128,90 +217,12 @@
             font-weight: bold;
         }
 
-        /* CLIENTS */
-
-        .clients-box {
+        .welcome {
             background: white;
-            border-radius: 15px;
             padding: 25px;
+            border-radius: 15px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-
-        .clients-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .clients-header h2 {
-            font-size: 20px;
-        }
-
-        .search {
-            padding: 11px 14px;
-            border: 1px solid #ddd;
-            border-radius: 9px;
-            width: 230px;
-            outline: none;
-        }
-
-        .client {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 0;
-            border-top: 1px solid #eee;
-        }
-
-        .client-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .client-name {
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .client-company {
-            color: #777;
-            font-size: 13px;
-        }
-
-        .status {
-            background: #e8f7ed;
-            color: #198754;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-right: 15px;
-        }
-
-        .actions a {
-            text-decoration: none;
-            color: #111;
-            font-size: 13px;
-            margin-left: 12px;
-        }
-
-        .actions a:hover {
-            text-decoration: underline;
-        }
-
-        /* MOBILE */
 
         @media (max-width: 800px) {
 
@@ -221,13 +232,20 @@
                 position: relative;
             }
 
-            .layout {
+            .logout {
+                position: relative;
+                left: auto;
+                right: auto;
+                bottom: auto;
+                margin-top: 20px;
+            }
+
+            .dashboard {
                 display: block;
             }
 
             .main {
                 margin-left: 0;
-                width: 100%;
                 padding: 20px;
             }
 
@@ -240,35 +258,66 @@
                 align-items: flex-start;
                 gap: 15px;
             }
-
-            .clients-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-            .search {
-                width: 100%;
-            }
-
-            .client {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-            .actions {
-                margin-left: 63px;
-            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="layout">
+<div class="login-page" id="loginPage">
 
-    <!-- SIDEBAR -->
+    <div class="login-box">
+
+        <div class="login-logo">
+            SmartLink NFC
+        </div>
+
+        <div class="login-subtitle">
+            Admin Dashboard
+        </div>
+
+        <div class="error" id="loginError"></div>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+                <label>Email</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="admin@example.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="••••••••"
+                    required
+                >
+            </div>
+
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginButton"
+            >
+                Login
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<div class="dashboard" id="dashboard">
 
     <aside class="sidebar">
 
@@ -300,10 +349,12 @@
 
         </nav>
 
+        <button class="logout" id="logoutButton">
+            🚪 Logout
+        </button>
+
     </aside>
 
-
-    <!-- MAIN -->
 
     <main class="main">
 
@@ -311,7 +362,7 @@
 
             <div>
                 <h1>Dashboard</h1>
-                <p>Manage your SmartLink NFC clients.</p>
+                <p>Welcome to SmartLink NFC.</p>
             </div>
 
             <a href="#" class="add-btn">
@@ -320,8 +371,6 @@
 
         </div>
 
-
-        <!-- STATISTICS -->
 
         <div class="cards">
 
@@ -332,7 +381,7 @@
                 </div>
 
                 <div class="card-number">
-                    3
+                    0
                 </div>
 
             </div>
@@ -345,7 +394,7 @@
                 </div>
 
                 <div class="card-number">
-                    3
+                    0
                 </div>
 
             </div>
@@ -358,7 +407,7 @@
                 </div>
 
                 <div class="card-number">
-                    3
+                    0
                 </div>
 
             </div>
@@ -366,165 +415,15 @@
         </div>
 
 
-        <!-- CLIENTS -->
+        <div class="welcome">
 
-        <div class="clients-box">
+            <h2>
+                SmartLink NFC Admin
+            </h2>
 
-            <div class="clients-header">
-
-                <h2>Clients</h2>
-
-                <input
-                    type="text"
-                    class="search"
-                    placeholder="Search client..."
-                >
-
-            </div>
-
-
-            <!-- CLIENT 1 -->
-
-            <div class="client">
-
-                <div class="client-info">
-
-                    <div class="avatar">
-                        👤
-                    </div>
-
-                    <div>
-
-                        <div class="client-name">
-                            Mohamed Alaoui
-                        </div>
-
-                        <div class="client-company">
-                            ABC Maroc
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div>
-
-                    <span class="status">
-                        Active
-                    </span>
-
-                    <span class="actions">
-
-                        <a href="index.html" target="_blank">
-                            View
-                        </a>
-
-                        <a href="#">
-                            Edit
-                        </a>
-
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- CLIENT 2 -->
-
-            <div class="client">
-
-                <div class="client-info">
-
-                    <div class="avatar">
-                        👤
-                    </div>
-
-                    <div>
-
-                        <div class="client-name">
-                            Yassine Benali
-                        </div>
-
-                        <div class="client-company">
-                            XYZ Business
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div>
-
-                    <span class="status">
-                        Active
-                    </span>
-
-                    <span class="actions">
-
-                        <a href="#">
-                            View
-                        </a>
-
-                        <a href="#">
-                            Edit
-                        </a>
-
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- CLIENT 3 -->
-
-            <div class="client">
-
-                <div class="client-info">
-
-                    <div class="avatar">
-                        👤
-                    </div>
-
-                    <div>
-
-                        <div class="client-name">
-                            Sara Amrani
-                        </div>
-
-                        <div class="client-company">
-                            Sara Consulting
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div>
-
-                    <span class="status">
-                        Active
-                    </span>
-
-                    <span class="actions">
-
-                        <a href="#">
-                            View
-                        </a>
-
-                        <a href="#">
-                            Edit
-                        </a>
-
-                    </span>
-
-                </div>
-
-            </div>
+            <p style="margin-top:10px; color:#666;">
+                Your admin dashboard is ready.
+            </p>
 
         </div>
 
@@ -532,5 +431,154 @@
 
 </div>
 
+
+<script>
+
+    const SUPABASE_URL =
+        "https://sxnthstllporbicsdbjk.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_Jnbgc4Z3e4p1KvPSAggX0w_m17LC7G_";
+
+
+    const supabaseClient = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+    const loginPage =
+        document.getElementById("loginPage");
+
+    const dashboard =
+        document.getElementById("dashboard");
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+    const loginButton =
+        document.getElementById("loginButton");
+
+    const loginError =
+        document.getElementById("loginError");
+
+    const logoutButton =
+        document.getElementById("logoutButton");
+
+
+    function showDashboard() {
+
+        loginPage.style.display = "none";
+
+        dashboard.style.display = "block";
+
+    }
+
+
+    function showLogin() {
+
+        loginPage.style.display = "flex";
+
+        dashboard.style.display = "none";
+
+    }
+
+
+    loginForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            loginError.style.display = "none";
+
+            loginButton.disabled = true;
+
+            loginButton.textContent = "Logging in...";
+
+
+            const email =
+                document
+                .getElementById("email")
+                .value
+                .trim();
+
+            const password =
+                document
+                .getElementById("password")
+                .value;
+
+
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+
+                    email: email,
+
+                    password: password
+
+                });
+
+
+            if (error) {
+
+                loginError.textContent =
+                    error.message;
+
+                loginError.style.display = "block";
+
+                loginButton.disabled = false;
+
+                loginButton.textContent = "Login";
+
+                return;
+
+            }
+
+
+            showDashboard();
+
+            loginButton.disabled = false;
+
+            loginButton.textContent = "Login";
+
+        }
+    );
+
+
+    logoutButton.addEventListener(
+        "click",
+        async function() {
+
+            await supabaseClient.auth.signOut();
+
+            showLogin();
+
+        }
+    );
+
+
+    async function checkSession() {
+
+        const { data } =
+            await supabaseClient.auth.getSession();
+
+        if (data.session) {
+
+            showDashboard();
+
+        } else {
+
+            showLogin();
+
+        }
+
+    }
+
+
+    checkSession();
+
+</script>
+
 </body>
 </html>
+```
