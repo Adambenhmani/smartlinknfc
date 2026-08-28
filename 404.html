@@ -534,7 +534,7 @@ body{
 
             <a class="action" id="callButton" href="#">
                 <div class="action-icon"><i class="fa-solid fa-phone"></i></div>
-                <div class="action-text">Call 1</div>
+                <div class="action-text">Call</div>
             </a>
 
             <a class="action" id="callButton2" href="#">
@@ -564,7 +564,7 @@ body{
 
             <a class="action" id="emailButton" href="#">
                 <div class="action-icon"><i class="fa-solid fa-envelope"></i></div>
-                <div class="action-text">Email 1</div>
+                <div class="action-text">Email</div>
             </a>
 
             <a class="action" id="emailButton2" href="#">
@@ -611,7 +611,7 @@ body{
 
 
                 <a class="link hidden" id="whatsappLink" href="#" target="_blank" rel="noopener noreferrer">
-                    <i class="fa-brands fa-whatsapp brand-icon" aria-hidden="true"></i> WhatsApp 1
+                    <i class="fa-brands fa-whatsapp brand-icon" aria-hidden="true"></i> WhatsApp
                 </a>
 
                 <a class="link hidden" id="whatsappLink2" href="#" target="_blank" rel="noopener noreferrer">
@@ -1181,6 +1181,17 @@ function renderProfile(client){
         client
     );
 
+    console.log("SmartLink 2/3 fields:", {
+        phone2: client.phone2 ?? client.phone_2,
+        phone3: client.phone3 ?? client.phone_3,
+        whatsapp2: client.whatsapp2 ?? client.whatsapp_2,
+        whatsapp3: client.whatsapp3 ?? client.whatsapp_3,
+        email2: client.email2 ?? client.email_2,
+        email3: client.email3 ?? client.email_3,
+        maps2: client.maps_link2 ?? client.maps_link_2,
+        maps3: client.maps_link3 ?? client.maps_link_3
+    });
+
 
     /* NAME */
 
@@ -1267,19 +1278,19 @@ function renderProfile(client){
 
 
     /* PHONE 1 / 2 / 3 */
-    setupPhoneAction("callButton", client.phone, "Call 1");
-    setupPhoneAction("callButton2", client.phone2, "Call 2");
-    setupPhoneAction("callButton3", client.phone3, "Call 3");
+    setupPhoneAction("callButton", client.phone, "Call");
+    setupPhoneAction("callButton2", (client.phone2 ?? client.phone_2), "Call 2");
+    setupPhoneAction("callButton3", (client.phone3 ?? client.phone_3), "Call 3");
 
     /* GOOGLE MAPS 1 / 2 / 3 */
-    setupMapsAction("mapsButton", "mapsText", client.maps_link, client.maps_label || "Magasin 1");
-    setupMapsAction("mapsButton2", "mapsText2", client.maps_link2, client.maps_label2 || "Magasin 2");
-    setupMapsAction("mapsButton3", "mapsText3", client.maps_link3, client.maps_label3 || "Magasin 3");
+    setupMapsAction("mapsButton", "mapsText", client.maps_link, client.maps_label || "Google Maps");
+    setupMapsAction("mapsButton2", "mapsText2", (client.maps_link2 ?? client.maps_link_2), (client.maps_label2 ?? client.maps_label_2) || "Magasin 2");
+    setupMapsAction("mapsButton3", "mapsText3", (client.maps_link3 ?? client.maps_link_3), (client.maps_label3 ?? client.maps_label_3) || "Magasin 3");
 
     /* EMAIL 1 / 2 / 3 */
-    setupEmailAction("emailButton", client.email, "Email 1");
-    setupEmailAction("emailButton2", client.email2, "Email 2");
-    setupEmailAction("emailButton3", client.email3, "Email 3");
+    setupEmailAction("emailButton", client.email, "Email");
+    setupEmailAction("emailButton2", (client.email2 ?? client.email_2), "Email 2");
+    setupEmailAction("emailButton3", (client.email3 ?? client.email_3), "Email 3");
 
     /* ABOUT */
 
@@ -1298,8 +1309,8 @@ function renderProfile(client){
 
     /* WHATSAPP 1 / 2 / 3 */
     setupWhatsAppLink("whatsappLink", client.whatsapp || null);
-    setupWhatsAppLink("whatsappLink2", client.whatsapp2 || null);
-    setupWhatsAppLink("whatsappLink3", client.whatsapp3 || null);
+    setupWhatsAppLink("whatsappLink2", (client.whatsapp2 ?? client.whatsapp_2) || null);
+    setupWhatsAppLink("whatsappLink3", (client.whatsapp3 ?? client.whatsapp_3) || null);
 
     /* WEBSITE */
 
@@ -1622,25 +1633,25 @@ FN:${escapeVCard(client.name || "")}
 ORG:${escapeVCard(client.company || "")}
 TITLE:${escapeVCard(client.job || "")}
 TEL;TYPE=CELL,VOICE:${escapeVCard(client.phone || "")}
-TEL;TYPE=CELL,VOICE:${escapeVCard(client.phone2 || "")}
-TEL;TYPE=CELL,VOICE:${escapeVCard(client.phone3 || "")}
+TEL;TYPE=CELL,VOICE:${escapeVCard((client.phone2 ?? client.phone_2) || "")}
+TEL;TYPE=CELL,VOICE:${escapeVCard((client.phone3 ?? client.phone_3) || "")}
 EMAIL;TYPE=INTERNET:${escapeVCard(client.email || "")}
-EMAIL;TYPE=INTERNET:${escapeVCard(client.email2 || "")}
-EMAIL;TYPE=INTERNET:${escapeVCard(client.email3 || "")}
+EMAIL;TYPE=INTERNET:${escapeVCard((client.email2 ?? client.email_2) || "")}
+EMAIL;TYPE=INTERNET:${escapeVCard((client.email3 ?? client.email_3) || "")}
 URL;TYPE=WORK:${escapeVCard(client.website || "")}
 X-SOCIALPROFILE;TYPE=instagram:${escapeVCard(client.instagram || "")}
 X-SOCIALPROFILE;TYPE=facebook:${escapeVCard(client.facebook || "")}
 X-SOCIALPROFILE;TYPE=linkedin:${escapeVCard(client.linkedin || "")}
 X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard(client.whatsapp ? "https://wa.me/" + whatsappPhone(client.whatsapp) : "")}
-X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard(client.whatsapp2 ? "https://wa.me/" + whatsappPhone(client.whatsapp2) : "")}
-X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard(client.whatsapp3 ? "https://wa.me/" + whatsappPhone(client.whatsapp3) : "")}
+X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard((client.whatsapp2 ?? client.whatsapp_2) ? "https://wa.me/" + whatsappPhone((client.whatsapp2 ?? client.whatsapp_2)) : "")}
+X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard((client.whatsapp3 ?? client.whatsapp_3) ? "https://wa.me/" + whatsappPhone((client.whatsapp3 ?? client.whatsapp_3)) : "")}
 URL:${escapeVCard(client.website || "")}
 item1.URL:${escapeVCard(client.maps_link || "")}
 item1.X-ABLabel:${escapeVCard(client.maps_label || "Magasin 1")}
-item2.URL:${escapeVCard(client.maps_link2 || "")}
-item2.X-ABLabel:${escapeVCard(client.maps_label2 || "Magasin 2")}
-item3.URL:${escapeVCard(client.maps_link3 || "")}
-item3.X-ABLabel:${escapeVCard(client.maps_label3 || "Magasin 3")}
+item2.URL:${escapeVCard((client.maps_link2 ?? client.maps_link_2) || "")}
+item2.X-ABLabel:${escapeVCard((client.maps_label2 ?? client.maps_label_2) || "Magasin 2")}
+item3.URL:${escapeVCard((client.maps_link3 ?? client.maps_link_3) || "")}
+item3.X-ABLabel:${escapeVCard((client.maps_label3 ?? client.maps_label_3) || "Magasin 3")}
 NOTE:${escapeVCard(client.about || "")}
 END:VCARD`;
 
