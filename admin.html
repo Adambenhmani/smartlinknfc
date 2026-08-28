@@ -734,12 +734,34 @@ body {
 
             <div>
 
-                <label>Email</label>
+                <label>Email 1</label>
 
                 <input
                     type="email"
                     name="email"
-                    placeholder="email@example.com">
+                    placeholder="+212...">
+
+            </div>
+
+            <div>
+
+                <label>Email 2</label>
+
+                <input
+                    type="email"
+                    name="email2"
+                    placeholder="+212...">
+
+            </div>
+
+            <div>
+
+                <label>Email 3</label>
+
+                <input
+                    type="email"
+                    name="email3"
+                    placeholder="+212...">
 
             </div>
 
@@ -794,7 +816,7 @@ body {
 
             <div>
 
-                <label>📍 Google Maps — Magasin 1</label>
+                <label>📍 Google Maps 1</label>
 
                 <input
                     type="url"
@@ -805,7 +827,18 @@ body {
 
             <div>
 
-                <label>📍 Google Maps — Magasin 2</label>
+                <label>Label Maps 1</label>
+
+                <input
+                    type="text"
+                    name="maps_label"
+                    placeholder="Magasin 1">
+
+            </div>
+
+            <div>
+
+                <label>📍 Google Maps 2</label>
 
                 <input
                     type="url"
@@ -816,7 +849,18 @@ body {
 
             <div>
 
-                <label>📍 Google Maps — Magasin 3</label>
+                <label>Label Maps 2</label>
+
+                <input
+                    type="text"
+                    name="maps_label2"
+                    placeholder="Magasin 2">
+
+            </div>
+
+            <div>
+
+                <label>📍 Google Maps 3</label>
 
                 <input
                     type="url"
@@ -824,8 +868,16 @@ body {
                     placeholder="https://maps.google.com/...">
 
             </div>
-            <div class="full" style="font-size:13px;color:#777;">
-                💡 Magasin 2 و Magasin 3 اختياريين. إلا كان عند العميل محل واحد، خليهوم فارغين.
+
+            <div>
+
+                <label>Label Maps 3</label>
+
+                <input
+                    type="text"
+                    name="maps_label3"
+                    placeholder="Magasin 3">
+
             </div>
 
 
@@ -1919,6 +1971,12 @@ clientForm.addEventListener(
                 email:
                     formData.get("email")?.trim() || null,
 
+                email2:
+                    formData.get("email2")?.trim() || null,
+
+                email3:
+                    formData.get("email3")?.trim() || null,
+
                 website:
                     formData.get("website")?.trim() || null,
 
@@ -1934,11 +1992,20 @@ clientForm.addEventListener(
                 maps_link:
                     formData.get("maps_link")?.trim() || null,
 
+                maps_label:
+                    formData.get("maps_label")?.trim() || null,
+
                 maps_link2:
                     formData.get("maps_link2")?.trim() || null,
 
+                maps_label2:
+                    formData.get("maps_label2")?.trim() || null,
+
                 maps_link3:
                     formData.get("maps_link3")?.trim() || null,
+
+                maps_label3:
+                    formData.get("maps_label3")?.trim() || null,
 
                 about:
                     formData.get("about")?.trim() || null,
@@ -2540,34 +2607,26 @@ function editClient(id){
 
     clientForm.elements["phone"].value =
         client.phone || "";
-
-    if(clientForm.elements["phone2"]){
-        clientForm.elements["phone2"].value =
-            client.phone2 || "";
-    }
-
-    if(clientForm.elements["phone3"]){
-        clientForm.elements["phone3"].value =
-            client.phone3 || "";
-    }
+    clientForm.elements["phone2"].value =
+        client.phone2 || "";
+    clientForm.elements["phone3"].value =
+        client.phone3 || "";
 
 
     clientForm.elements["whatsapp"].value =
         client.whatsapp || "";
-
-    if(clientForm.elements["whatsapp2"]){
-        clientForm.elements["whatsapp2"].value =
-            client.whatsapp2 || "";
-    }
-
-    if(clientForm.elements["whatsapp3"]){
-        clientForm.elements["whatsapp3"].value =
-            client.whatsapp3 || "";
-    }
+    clientForm.elements["whatsapp2"].value =
+        client.whatsapp2 || "";
+    clientForm.elements["whatsapp3"].value =
+        client.whatsapp3 || "";
 
 
     clientForm.elements["email"].value =
         client.email || "";
+    clientForm.elements["email2"].value =
+        client.email2 || "";
+    clientForm.elements["email3"].value =
+        client.email3 || "";
 
 
     clientForm.elements["website"].value =
@@ -2588,16 +2647,16 @@ function editClient(id){
 
     clientForm.elements["maps_link"].value =
         client.maps_link || "";
-
-    if(clientForm.elements["maps_link2"]){
-        clientForm.elements["maps_link2"].value =
-            client.maps_link2 || "";
-    }
-
-    if(clientForm.elements["maps_link3"]){
-        clientForm.elements["maps_link3"].value =
-            client.maps_link3 || "";
-    }
+    clientForm.elements["maps_label"].value =
+        client.maps_label || "";
+    clientForm.elements["maps_link2"].value =
+        client.maps_link2 || "";
+    clientForm.elements["maps_label2"].value =
+        client.maps_label2 || "";
+    clientForm.elements["maps_link3"].value =
+        client.maps_link3 || "";
+    clientForm.elements["maps_label3"].value =
+        client.maps_label3 || "";
 
 
     clientForm.elements["about"].value =
