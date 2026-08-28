@@ -134,15 +134,9 @@ body{
 
 .actions{
     display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-columns:repeat(3,1fr);
     gap:12px;
     margin-bottom:30px;
-}
-
-@media(max-width:520px){
-    .actions{
-        grid-template-columns:repeat(3,minmax(0,1fr));
-    }
 }
 
 .action{
@@ -426,6 +420,23 @@ body{
     --profile-color-soft:rgba(17,17,17,.10);
 }
 
+
+/* PROFILE COLOR FINAL FIX */
+:root{
+    --profile-color:#111111;
+    --profile-color-soft:rgba(17,17,17,.10);
+}
+
+.save-contact{
+    background:var(--profile-color) !important;
+}
+
+.name,
+.job,
+.section h2{
+    /* JS will set the selected per-profile color */
+}
+
 </style>
 
 </head>
@@ -551,8 +562,6 @@ body{
 
             </a>
 
-            
-
 
             <a
                 class="action"
@@ -564,12 +573,10 @@ body{
                 <div class="action-icon"><i class="fa-solid fa-location-dot"></i></div>
 
                 <div class="action-text">
-                    Magasin 1
+                    Google Maps
                 </div>
 
             </a>
-
-            
 
 
             <a
@@ -581,70 +588,6 @@ body{
 
                 <div class="action-text">
                     Email
-                </div>
-
-            </a>
-
-<a
-                class="action"
-                id="callButton2"
-                href="#"
-                style="display:none;">
-
-                <div class="action-icon"><i class="fa-solid fa-phone"></i></div>
-
-                <div class="action-text">
-                    Call 2
-                </div>
-
-            </a>
-
-<a
-                class="action"
-                id="mapsButton2"
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="display:none;">
-
-                <div class="action-icon"><i class="fa-solid fa-location-dot"></i></div>
-
-                <div class="action-text">
-                    Magasin 2
-                </div>
-
-            </a>
-
-            
-
-            
-
-            <a
-                class="action"
-                id="callButton3"
-                href="#"
-                style="display:none;">
-
-                <div class="action-icon"><i class="fa-solid fa-phone"></i></div>
-
-                <div class="action-text">
-                    Call 3
-                </div>
-
-            </a>
-
-            <a
-                class="action"
-                id="mapsButton3"
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="display:none;">
-
-                <div class="action-icon"><i class="fa-solid fa-location-dot"></i></div>
-
-                <div class="action-text">
-                    Magasin 3
                 </div>
 
             </a>
@@ -690,30 +633,6 @@ body{
                     rel="noopener noreferrer">
 
                     <i class="fa-brands fa-whatsapp brand-icon" aria-hidden="true"></i> WhatsApp
-
-                </a>
-
-
-                <a
-                    class="link hidden"
-                    id="whatsappLink2"
-                    href="#"
-                    target="_blank"
-                    rel="noopener noreferrer">
-
-                    <i class="fa-brands fa-whatsapp brand-icon" aria-hidden="true"></i> WhatsApp 2
-
-                </a>
-
-
-                <a
-                    class="link hidden"
-                    id="whatsappLink3"
-                    href="#"
-                    target="_blank"
-                    rel="noopener noreferrer">
-
-                    <i class="fa-brands fa-whatsapp brand-icon" aria-hidden="true"></i> WhatsApp 3
 
                 </a>
 
@@ -879,29 +798,11 @@ const aboutElement =
 const callButton =
     document.getElementById("callButton");
 
-const callButton2 =
-    document.getElementById("callButton2");
-
-const callButton3 =
-    document.getElementById("callButton3");
-
 const mapsButton =
     document.getElementById("mapsButton");
 
-const mapsButton2 =
-    document.getElementById("mapsButton2");
-
-const mapsButton3 =
-    document.getElementById("mapsButton3");
-
 const emailButton =
     document.getElementById("emailButton");
-
-const whatsappLink2 =
-    document.getElementById("whatsappLink2");
-
-const whatsappLink3 =
-    document.getElementById("whatsappLink3");
 
 const saveContact =
     document.getElementById("saveContact");
@@ -1098,10 +999,10 @@ function applyProfileTheme(color){
             hexToRgba(safeColor, 0.10)
         );
 
-    // Apply the chosen color to the visible profile UI.
+    // The actual Save Contact class in this project is .save-contact.
     document
         .querySelectorAll(
-            ".save-contact-button, #saveContact, .theme-primary"
+            ".save-contact, .theme-primary, .theme-button"
         )
         .forEach(function(el){
 
@@ -1119,9 +1020,10 @@ function applyProfileTheme(color){
 
         });
 
+    // Main profile accents.
     document
         .querySelectorAll(
-            "h1, h2, .theme-accent"
+            ".name, .job, .section h2, .theme-accent"
         )
         .forEach(function(el){
 
@@ -1133,19 +1035,21 @@ function applyProfileTheme(color){
 
         });
 
+    // Icons use the same selected color.
     document
         .querySelectorAll(
-            ".link a, .social-link"
+            ".action-icon, .social-icon"
         )
         .forEach(function(el){
 
             el.style.setProperty(
-                "border-color",
-                hexToRgba(safeColor, 0.22),
+                "color",
+                safeColor,
                 "important"
             );
 
         });
+
 }
 
 function hexToRgba(hex, alpha){
@@ -1378,48 +1282,6 @@ function renderProfile(client){
 
     }
 
-    const phone2 =
-        cleanPhone(
-            client.phone2
-        );
-
-    if(phone2){
-
-        callButton2.href =
-            "tel:" +
-            phone2;
-
-        callButton2.style.display =
-            "flex";
-
-    }else{
-
-        callButton2.style.display =
-            "none";
-
-    }
-
-    const phone3 =
-        cleanPhone(
-            client.phone3
-        );
-
-    if(phone3){
-
-        callButton3.href =
-            "tel:" +
-            phone3;
-
-        callButton3.style.display =
-            "flex";
-
-    }else{
-
-        callButton3.style.display =
-            "none";
-
-    }
-
 
     /* GOOGLE MAPS */
 
@@ -1436,40 +1298,6 @@ function renderProfile(client){
     }else{
 
         mapsButton.style.display =
-            "none";
-
-    }
-
-    if(client.maps_link2){
-
-        mapsButton2.href =
-            validUrl(
-                client.maps_link2
-            );
-
-        mapsButton2.style.display =
-            "flex";
-
-    }else{
-
-        mapsButton2.style.display =
-            "none";
-
-    }
-
-    if(client.maps_link3){
-
-        mapsButton3.href =
-            validUrl(
-                client.maps_link3
-            );
-
-        mapsButton3.style.display =
-            "flex";
-
-    }else{
-
-        mapsButton3.style.display =
             "none";
 
     }
@@ -1539,70 +1367,6 @@ function renderProfile(client){
 
         setupLink(
             "whatsappLink",
-            null
-        );
-
-    }
-
-    if(client.whatsapp2){
-
-        const whatsapp2 =
-            whatsappPhone(
-                client.whatsapp2
-            );
-
-        if(whatsapp2){
-
-            setupLink(
-                "whatsappLink2",
-                "https://wa.me/" + whatsapp2
-            );
-
-        }else{
-
-            setupLink(
-                "whatsappLink2",
-                null
-            );
-
-        }
-
-    }else{
-
-        setupLink(
-            "whatsappLink2",
-            null
-        );
-
-    }
-
-    if(client.whatsapp3){
-
-        const whatsapp3 =
-            whatsappPhone(
-                client.whatsapp3
-            );
-
-        if(whatsapp3){
-
-            setupLink(
-                "whatsappLink3",
-                "https://wa.me/" + whatsapp3
-            );
-
-        }else{
-
-            setupLink(
-                "whatsappLink3",
-                null
-            );
-
-        }
-
-    }else{
-
-        setupLink(
-            "whatsappLink3",
             null
         );
 
@@ -1762,6 +1526,13 @@ function renderProfile(client){
         "hidden"
     );
 
+    // Final pass after all profile elements are rendered.
+    applyProfileTheme(
+        client.theme_color ||
+        client.themeColor ||
+        "#111111"
+    );
+
 }
 
 
@@ -1882,11 +1653,6 @@ FN:${escapeVCard(client.name || "")}
 ORG:${escapeVCard(client.company || "")}
 TITLE:${escapeVCard(client.job || "")}
 TEL;TYPE=CELL,VOICE:${escapeVCard(client.phone || "")}
-TEL;TYPE=CELL,VOICE:${escapeVCard(client.phone2 || "")}
-TEL;TYPE=CELL,VOICE:${escapeVCard(client.phone3 || "")}
-TEL;TYPE=WORK:${escapeVCard(client.whatsapp || "")}
-TEL;TYPE=WORK:${escapeVCard(client.whatsapp2 || "")}
-TEL;TYPE=WORK:${escapeVCard(client.whatsapp3 || "")}
 EMAIL;TYPE=INTERNET:${escapeVCard(client.email || "")}
 URL;TYPE=WORK:${escapeVCard(client.website || "")}
 X-SOCIALPROFILE;TYPE=instagram:${escapeVCard(client.instagram || "")}
@@ -1895,11 +1661,7 @@ X-SOCIALPROFILE;TYPE=linkedin:${escapeVCard(client.linkedin || "")}
 X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard(client.whatsapp ? "https://wa.me/" + whatsappPhone(client.whatsapp) : "")}
 URL:${escapeVCard(client.website || "")}
 item1.URL:${escapeVCard(client.maps_link || "")}
-item1.X-ABLabel:Magasin 1
-item2.URL:${escapeVCard(client.maps_link2 || "")}
-item2.X-ABLabel:Magasin 2
-item3.URL:${escapeVCard(client.maps_link3 || "")}
-item3.X-ABLabel:Magasin 3
+item1.X-ABLabel:Google Maps
 NOTE:${escapeVCard(client.about || "")}
 END:VCARD`;
 
