@@ -666,7 +666,7 @@ body {
 
             <div>
 
-                <label>Phone</label>
+                <label>Phone 1</label>
 
                 <input
                     type="text"
@@ -675,14 +675,58 @@ body {
 
             </div>
 
+            <div>
+
+                <label>Phone 2</label>
+
+                <input
+                    type="text"
+                    name="phone2"
+                    placeholder="+212...">
+
+            </div>
 
             <div>
 
-                <label>WhatsApp</label>
+                <label>Phone 3</label>
+
+                <input
+                    type="text"
+                    name="phone3"
+                    placeholder="+212...">
+
+            </div>
+
+
+            <div>
+
+                <label>WhatsApp 1</label>
 
                 <input
                     type="text"
                     name="whatsapp"
+                    placeholder="+212...">
+
+            </div>
+
+            <div>
+
+                <label>WhatsApp 2</label>
+
+                <input
+                    type="text"
+                    name="whatsapp2"
+                    placeholder="+212...">
+
+            </div>
+
+            <div>
+
+                <label>WhatsApp 3</label>
+
+                <input
+                    type="text"
+                    name="whatsapp3"
                     placeholder="+212...">
 
             </div>
@@ -750,13 +794,38 @@ body {
 
             <div>
 
-                <label>📍 Google Maps Location</label>
+                <label>📍 Google Maps — Magasin 1</label>
 
                 <input
                     type="url"
                     name="maps_link"
                     placeholder="https://maps.google.com/...">
 
+            </div>
+
+            <div>
+
+                <label>📍 Google Maps — Magasin 2</label>
+
+                <input
+                    type="url"
+                    name="maps_link2"
+                    placeholder="https://maps.google.com/...">
+
+            </div>
+
+            <div>
+
+                <label>📍 Google Maps — Magasin 3</label>
+
+                <input
+                    type="url"
+                    name="maps_link3"
+                    placeholder="https://maps.google.com/...">
+
+            </div>
+            <div class="full" style="font-size:13px;color:#777;">
+                💡 Magasin 2 و Magasin 3 اختياريين. إلا كان عند العميل محل واحد، خليهوم فارغين.
             </div>
 
 
@@ -1832,8 +1901,20 @@ clientForm.addEventListener(
                 phone:
                     formData.get("phone")?.trim() || null,
 
+                phone2:
+                    formData.get("phone2")?.trim() || null,
+
+                phone3:
+                    formData.get("phone3")?.trim() || null,
+
                 whatsapp:
                     formData.get("whatsapp")?.trim() || null,
+
+                whatsapp2:
+                    formData.get("whatsapp2")?.trim() || null,
+
+                whatsapp3:
+                    formData.get("whatsapp3")?.trim() || null,
 
                 email:
                     formData.get("email")?.trim() || null,
@@ -1852,6 +1933,12 @@ clientForm.addEventListener(
 
                 maps_link:
                     formData.get("maps_link")?.trim() || null,
+
+                maps_link2:
+                    formData.get("maps_link2")?.trim() || null,
+
+                maps_link3:
+                    formData.get("maps_link3")?.trim() || null,
 
                 about:
                     formData.get("about")?.trim() || null,
@@ -2454,9 +2541,29 @@ function editClient(id){
     clientForm.elements["phone"].value =
         client.phone || "";
 
+    if(clientForm.elements["phone2"]){
+        clientForm.elements["phone2"].value =
+            client.phone2 || "";
+    }
+
+    if(clientForm.elements["phone3"]){
+        clientForm.elements["phone3"].value =
+            client.phone3 || "";
+    }
+
 
     clientForm.elements["whatsapp"].value =
         client.whatsapp || "";
+
+    if(clientForm.elements["whatsapp2"]){
+        clientForm.elements["whatsapp2"].value =
+            client.whatsapp2 || "";
+    }
+
+    if(clientForm.elements["whatsapp3"]){
+        clientForm.elements["whatsapp3"].value =
+            client.whatsapp3 || "";
+    }
 
 
     clientForm.elements["email"].value =
@@ -2481,6 +2588,16 @@ function editClient(id){
 
     clientForm.elements["maps_link"].value =
         client.maps_link || "";
+
+    if(clientForm.elements["maps_link2"]){
+        clientForm.elements["maps_link2"].value =
+            client.maps_link2 || "";
+    }
+
+    if(clientForm.elements["maps_link3"]){
+        clientForm.elements["maps_link3"].value =
+            client.maps_link3 || "";
+    }
 
 
     clientForm.elements["about"].value =
