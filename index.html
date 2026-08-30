@@ -193,31 +193,40 @@ body{
 }
 
 /* GOOGLE REVIEWS */
+.google-reviews-section{
+    display:none;
+}
+
 .google-reviews-card{
-    background:#f7f7f7;
-    border:1px solid #ececec;
-    border-radius:16px;
-    padding:20px;
+    background:#f8f8f8;
+    border-radius:14px;
+    padding:18px;
     text-align:center;
 }
+
 .google-reviews-card p{
     margin:0 0 14px;
     color:#666;
     font-size:15px;
 }
+
 .google-review-btn{
     display:flex;
     align-items:center;
     justify-content:center;
     gap:9px;
     width:100%;
-    padding:15px 18px;
+    padding:15px;
     border-radius:12px;
-    background:var(--profile-color,#111111);
+    background:var(--profile-color,#111);
     color:#fff;
     text-decoration:none;
-    font-weight:700;
     font-size:16px;
+    font-weight:700;
+}
+
+.google-review-btn i{
+    font-size:18px;
 }
 
 .footer{
@@ -625,12 +634,12 @@ body{
 
         </div>
 
-        <!-- GOOGLE REVIEWS: shown only when a link exists -->
+        <!-- GOOGLE REVIEWS -->
         <div
-            class="section hidden"
+            class="section google-reviews-section"
             id="googleReviewsSection">
 
-            <h2>Google Reviews</h2>
+            <h2>⭐ Google Reviews</h2>
 
             <div class="google-reviews-card">
                 <p>Share your experience</p>
@@ -645,7 +654,6 @@ body{
             </div>
 
         </div>
-
 
         <!-- LINKS -->
 
@@ -1363,13 +1371,15 @@ function renderProfile(client){
     }
 
 
-    /* GOOGLE REVIEWS — section is visible only when a link is saved */
-    if(client.google_reviews_link){
-        googleReviewsButton.href = validUrl(client.google_reviews_link);
-        googleReviewsSection.classList.remove("hidden");
+    /* GOOGLE REVIEWS - ONLY SHOW WHEN A LINK EXISTS */
+    const googleReviewsUrl = String(client.google_reviews_link || "").trim();
+
+    if(googleReviewsUrl){
+        googleReviewsButton.href = googleReviewsUrl;
+        googleReviewsSection.style.display = "block";
     }else{
         googleReviewsButton.href = "#";
-        googleReviewsSection.classList.add("hidden");
+        googleReviewsSection.style.display = "none";
     }
 
 
