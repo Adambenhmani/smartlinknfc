@@ -880,6 +880,17 @@ body {
 
             </div>
 
+            <div class="full">
+
+                <label>⭐ Google Reviews Link</label>
+
+                <input
+                    type="url"
+                    name="google_reviews_link"
+                    placeholder="https://g.page/r/.../review">
+
+            </div>
+
 
             <!-- PROFILE PHOTO -->
 
@@ -978,18 +989,6 @@ body {
 
                 <small style="display:block;margin-top:7px;color:#777;">
                     اختار أي لون من palette أو استعمل Color Picker. تقدر تدخل أي HEX بغيتي.
-                </small>
-            </div>
-
-
-            <div class="full">
-                <label>⭐ Google Reviews Link</label>
-                <input
-                    type="url"
-                    name="google_reviews_link"
-                    placeholder="https://g.page/r/.../review">
-                <small style="display:block;margin-top:6px;color:#777;">
-                    Optional — Google Reviews appears on the profile only when this link is filled.
                 </small>
             </div>
 
@@ -2673,10 +2672,8 @@ function editClient(id){
     clientForm.elements["maps_label3"].value =
         client.maps_label3 || "";
 
-    if(clientForm.elements["google_reviews_link"]){
-        clientForm.elements["google_reviews_link"].value =
-            client.google_reviews_link || "";
-    }
+    clientForm.elements["google_reviews_link"].value =
+        client.google_reviews_link || "";
 
 
     clientForm.elements["about"].value =
