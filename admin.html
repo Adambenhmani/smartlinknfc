@@ -2505,12 +2505,17 @@ function viewClient(id){
 
     const slug = client.slug || client.id;
 
+    const isGithubPages =
+        window.location.hostname.endsWith("github.io");
+
+    const basePath =
+        isGithubPages
+            ? "/smartlinknfc"
+            : "";
+
     const url =
         window.location.origin +
-        window.location.pathname.replace(
-            "admin.html",
-            "index.html"
-        ) +
+        basePath +
         "/" +
         encodeURIComponent(slug);
 
