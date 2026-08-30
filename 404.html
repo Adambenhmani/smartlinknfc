@@ -23,6 +23,7 @@ function getSocialIcon(label){
         instagram: "fa-brands fa-instagram",
         facebook: "fa-brands fa-facebook-f",
         linkedin: "fa-brands fa-linkedin-in",
+        tiktok: "fa-brands fa-tiktok",
         youtube: "fa-brands fa-youtube",
         tiktok: "fa-brands fa-tiktok",
         website: "fa-solid fa-globe",
@@ -725,6 +726,18 @@ body{
                 </a>
 
 
+                <a
+                    class="link hidden"
+                    id="tiktokLink"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer">
+
+                    <i class="fa-brands fa-tiktok brand-icon" aria-hidden="true"></i> TikTok
+
+                </a>
+
+
             </div>
 
         </div>
@@ -923,19 +936,64 @@ const pathParts =
         .split("/")
         .filter(Boolean);
 
-// Supports:
-// /smartlinknfc/samir
-// /smartlinknfc/index.html/samir
-const slugFromPath =
-    pathParts.length >= 2 &&
-    pathParts[0].toLowerCase() === "smartlinknfc"
-        ? (
-            pathParts[1].toLowerCase() === "index.html" ||
-            pathParts[1].toLowerCase() === "admin.html"
-                ? (pathParts[2] ? decodeURIComponent(pathParts[2]) : null)
-                : decodeURIComponent(pathParts[1])
-          )
-        : null;
+// Supports all of these formats:
+// Custom domain:
+//   /luxobiobeaut
+//   /index.html/luxobiobeaut
+//
+// Old GitHub Pages links:
+//   /smartlinknfc/luxobiobeaut
+//   /smartlinknfc/index.html/luxobiobeaut
+let slugFromPath = null;
+
+if(pathParts.length){
+
+    const firstPart =
+        pathParts[0].toLowerCase();
+
+    if(firstPart === "smartlinknfc"){
+
+        // Old GitHub Pages project path.
+        if(pathParts[1]){
+
+            const secondPart =
+                pathParts[1].toLowerCase();
+
+            if(
+                secondPart === "index.html" ||
+                secondPart === "404.html" ||
+                secondPart === "admin.html"
+            ){
+                slugFromPath =
+                    pathParts[2]
+                        ? decodeURIComponent(pathParts[2])
+                        : null;
+            }else{
+                slugFromPath =
+                    decodeURIComponent(pathParts[1]);
+            }
+        }
+
+    }else if(
+        firstPart === "index.html" ||
+        firstPart === "404.html" ||
+        firstPart === "admin.html"
+    ){
+
+        // Direct HTML path, for backward compatibility.
+        slugFromPath =
+            pathParts[1]
+                ? decodeURIComponent(pathParts[1])
+                : null;
+
+    }else{
+
+        // Custom domain clean URL, e.g.:
+        // https://smartlinknfc.site/luxobiobeaut
+        slugFromPath =
+            decodeURIComponent(pathParts[0]);
+    }
+}
 
 
 /* =====================================================
@@ -1420,6 +1478,14 @@ function renderProfile(client){
     );
 
 
+    /* TIKTOK */
+
+    setupLink(
+        "tiktokLink",
+        client.tiktok
+    );
+
+
     /* HIDE EMPTY LINK SECTION */
 
     const visibleLinks =
@@ -1718,6 +1784,7 @@ URL;TYPE=WORK:${escapeVCard(client.website || "")}
 X-SOCIALPROFILE;TYPE=instagram:${escapeVCard(client.instagram || "")}
 X-SOCIALPROFILE;TYPE=facebook:${escapeVCard(client.facebook || "")}
 X-SOCIALPROFILE;TYPE=linkedin:${escapeVCard(client.linkedin || "")}
+X-SOCIALPROFILE;TYPE=tiktok:${escapeVCard(client.tiktok || "")}
 X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard(client.whatsapp ? "https://wa.me/" + whatsappPhone(client.whatsapp) : "")}
 X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard((client.whatsapp2 ?? client.whatsapp_2) ? "https://wa.me/" + whatsappPhone((client.whatsapp2 ?? client.whatsapp_2)) : "")}
 X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard((client.whatsapp3 ?? client.whatsapp_3) ? "https://wa.me/" + whatsappPhone((client.whatsapp3 ?? client.whatsapp_3)) : "")}
