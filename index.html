@@ -1,811 +1,1237 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>SmartLink NFC</title>
+<title>SmartLink NFC - Admin</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-function getSocialIcon(label){
-    const key = String(label || "").trim().toLowerCase();
-    const icons = {
-        whatsapp: "fa-brands fa-whatsapp",
-        instagram: "fa-brands fa-instagram",
-        facebook: "fa-brands fa-facebook-f",
-        linkedin: "fa-brands fa-linkedin-in",
-        tiktok: "fa-brands fa-tiktok",
-        youtube: "fa-brands fa-youtube",
-        tiktok: "fa-brands fa-tiktok",
-        website: "fa-solid fa-globe",
-        "site web": "fa-solid fa-globe",
-        email: "fa-solid fa-envelope",
-        téléphone: "fa-solid fa-phone",
-        telephone: "fa-solid fa-phone",
-        phone: "fa-solid fa-phone",
-        adresse: "fa-solid fa-location-dot",
-        "google maps": "fa-solid fa-location-dot"
-    };
-    return icons[key] || "fa-solid fa-link";
-}
-</script>
 
 <style>
-
-*{
-    box-sizing:border-box;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-body{
-    margin:0;
-    font-family:Arial,Helvetica,sans-serif;
-    background:#f3f4f6;
-    color:#111;
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f6f8;
+    color: #111;
 }
 
-.profile-page{
-    width:100%;
-    max-width:600px;
-    min-height:100vh;
-    margin:auto;
-    background:white;
-    box-shadow:0 0 30px rgba(0,0,0,.08);
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+    padding: 20px;
 }
 
-.cover{
-    height:230px;
-    background:linear-gradient(135deg,#111,#292929);
-    background-size:cover;
-    background-position:center;
-    position:relative;
+.login-box {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
 }
 
-.profile-photo{
-    width:130px;
-    height:130px;
-    border-radius:50%;
-    position:absolute;
-    left:50%;
-    bottom:-65px;
-    transform:translateX(-50%);
-    background:#ddd;
-    border:6px solid white;
-    overflow:hidden;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+.login-logo {
+    text-align: center;
+    font-size: 27px;
+    font-weight: bold;
 }
 
-.profile-photo img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
+.login-subtitle {
+    text-align: center;
+    color: #777;
+    margin: 8px 0 30px;
 }
 
-.default-avatar{
-    font-size:55px;
+.form-group {
+    margin-bottom: 18px;
 }
 
-.content{
-    padding:85px 28px 35px;
-    text-align:center;
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
 }
 
-.name{
-    font-size:32px;
-    font-weight:700;
-    margin-bottom:8px;
+.form-group input,
+.client-form input,
+.client-form textarea {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 14px;
 }
 
-.job{
-    font-size:18px;
-    font-weight:600;
-    margin-bottom:6px;
+.login-btn,
+.save-btn {
+    width: 100%;
+    padding: 14px;
+    border: 0;
+    border-radius: 10px;
+    background: #111;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.company{
-    font-size:18px;
-    color:#666;
-    margin-bottom:28px;
+.login-error {
+    display: none;
+    background: #ffe8e8;
+    color: #c00;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
 }
 
-.save-contact{
-    display:block;
-    width:100%;
-    padding:18px;
-    border-radius:15px;
-    background:#111;
-    color:white;
-    text-decoration:none;
-    font-size:19px;
-    font-weight:700;
-    border:0;
-    cursor:pointer;
-    margin-bottom:20px;
+/* DASHBOARD */
+
+.dashboard {
+    display: none;
+    min-height: 100vh;
 }
 
-.actions{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
-    margin-bottom:30px;
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 240px;
+    background: #111;
+    color: white;
+    padding: 25px 18px;
 }
 
-.action{
-    background:#f1f1f1;
-    border-radius:14px;
-    padding:17px 8px;
-    text-decoration:none;
-    color:#111;
-    min-height:90px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
+.logo {
+    font-size: 21px;
+    font-weight: bold;
+    margin-bottom: 40px;
 }
 
-.action-icon{
-    font-size:29px;
-    margin-bottom:8px;
+.logo span {
+    color: #999;
 }
 
-.action-text{
-    font-size:14px;
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.section{
-    text-align:left;
-    margin-top:28px;
+.menu a {
+    color: #bbb;
+    text-decoration: none;
+    padding: 13px 15px;
+    border-radius: 10px;
 }
 
-.section h2{
-    font-size:23px;
-    margin-bottom:12px;
+.menu a:hover,
+.menu a.active {
+    background: #292929;
+    color: white;
 }
 
-.about{
-    color:#555;
-    font-size:17px;
-    line-height:1.6;
+.logout {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 25px;
+    padding: 12px;
+    background: #222;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 10px;
+    cursor: pointer;
 }
 
-.links{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+.main {
+    margin-left: 240px;
+    padding: 35px;
 }
 
-.link{
-    display:block;
-    padding:14px;
-    background:#f5f5f5;
-    border-radius:10px;
-    color:#111;
-    text-decoration:none;
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
 }
 
-/* GOOGLE REVIEWS */
-.google-reviews-section{
-    display:none;
+.topbar h1 {
+    font-size: 28px;
 }
 
-.google-reviews-card{
-    background:#f8f8f8;
-    border-radius:14px;
-    padding:18px;
-    text-align:center;
+.topbar p {
+    color: #777;
+    margin-top: 6px;
 }
 
-.google-reviews-card p{
-    margin:0 0 14px;
-    color:#666;
-    font-size:15px;
+.add-btn {
+    background: #111;
+    color: white;
+    border: 0;
+    padding: 13px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.google-review-btn{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:9px;
-    width:100%;
-    padding:15px;
-    border-radius:12px;
-    background:var(--profile-color,#111);
-    color:#fff;
-    text-decoration:none;
-    font-size:16px;
-    font-weight:700;
+/* STATS */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
-.google-review-btn i{
-    font-size:18px;
+.card {
+    background: white;
+    padding: 24px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
 }
 
-.footer{
-    text-align:center;
-    color:#999;
-    font-size:13px;
-    padding:25px;
+.card-title {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 12px;
 }
 
-.loading{
-    text-align:center;
-    padding:80px 20px;
+.card-number {
+    font-size: 30px;
+    font-weight: bold;
 }
 
-.loading h1{
-    font-size:30px;
+/* CLIENTS */
+
+.clients-box {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
 }
 
-.error{
-    text-align:center;
-    padding:80px 25px;
+.clients-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.error h1{
-    font-size:28px;
+.search {
+    width: 250px;
+    padding: 11px 14px;
+    border: 1px solid #ddd;
+    border-radius: 9px;
 }
 
-.hidden{
-    display:none;
+.client {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 0;
+    border-top: 1px solid #eee;
 }
 
-@media(max-width:500px){
+.client-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
-    .profile-page{
-        width:100%;
+.avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 22px;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.client-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.client-company {
+    color: #777;
+    font-size: 13px;
+}
+
+.client-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.action-btn {
+    border: 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.view-btn {
+    background: #eee;
+}
+
+.edit-btn {
+    background: #111;
+    color: white;
+}
+
+.delete-btn {
+    background: #ffe5e5;
+    color: #c00;
+}
+
+.status {
+    background: #e8f7ed;
+    color: #198754;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.empty {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+}
+
+/* MODAL */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 780px;
+    max-height: 92vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 18px;
+    padding: 30px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.close-btn {
+    border: 0;
+    background: #eee;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.client-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.client-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+.file-box {
+    border: 2px dashed #ddd;
+    padding: 16px;
+    border-radius: 12px;
+    background: #fafafa;
+}
+
+.file-box label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.file-box input {
+    border: 0;
+    padding: 0;
+    background: transparent;
+}
+
+.preview {
+    display: none;
+    margin-top: 12px;
+}
+
+.preview img {
+    max-width: 140px;
+    max-height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.cancel-btn {
+    padding: 12px 20px;
+    border: 0;
+    border-radius: 9px;
+    background: #eee;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.save-btn {
+    width: auto;
+    padding: 12px 25px;
+}
+
+.form-message {
+    display: none;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.form-message.error {
+    display: block;
+    background: #ffe8e8;
+    color: #c00;
+}
+
+.form-message.success {
+    display: block;
+    background: #e8f8ee;
+    color: #08752f;
+}
+
+.progress {
+    display: none;
+    margin-top: 10px;
+    color: #666;
+    font-size: 13px;
+}
+
+/* MOBILE */
+
+@media(max-width:800px) {
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
     }
 
-    .cover{
-        height:210px;
+    .logout {
+        position: relative;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        width: 100%;
+        margin-top: 20px;
     }
 
-    .content{
-        padding-left:20px;
-        padding-right:20px;
+    .main {
+        margin-left: 0;
+        padding: 20px;
     }
 
-    .name{
-        font-size:29px;
+    .cards {
+        grid-template-columns: 1fr;
     }
 
-}
-
-
-
-/* MAPS ACTION STYLE */
-.actions{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
-}
-
-.action{
-    min-height:92px;
-}
-
-@media(max-width:520px){
-    .actions{
-        gap:8px;
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
     }
-    .action{
-        min-height:82px;
+
+    .clients-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
     }
-}
 
-/* REAL APP / BRAND ICONS */
-.action-icon i,
-.action-button i{
-    font-size:28px;
-    line-height:1;
-}
-.social-icon i,
-.link-icon i{
-    font-size:30px;
-}
-.action-button .action-icon{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-
-/* AUTHENTIC APP / BRAND ICONS */
-.brand-icon{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:30px;
-    height:30px;
-    font-size:28px;
-    line-height:1;
-    vertical-align:middle;
-}
-.action-icon .brand-icon{
-    width:auto;
-    height:auto;
-    font-size:28px;
-}
-.link .brand-icon{
-    margin-right:10px;
-}
-
-
-/* =====================================================
-   PHOTOS GALLERY
-===================================================== */
-
-.photos-section{
-    margin-top:30px;
-    width:100%;
-}
-
-.photos-section h2{
-    margin-bottom:14px;
-}
-
-.photos-gallery{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:12px;
-    width:100%;
-}
-
-.photo-item{
-    width:100%;
-    aspect-ratio:1 / 1;
-    border-radius:14px;
-    overflow:hidden;
-    background:#f3f3f3;
-    cursor:pointer;
-}
-
-.photo-item img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    transition:transform .2s ease;
-}
-
-.photo-item:hover img{
-    transform:scale(1.03);
-}
-
-/* Fullscreen photo viewer */
-.photo-lightbox{
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    background:rgba(0,0,0,.88);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-}
-
-.photo-lightbox.hidden{
-    display:none;
-}
-
-.photo-lightbox img{
-    max-width:92vw;
-    max-height:88vh;
-    object-fit:contain;
-    border-radius:12px;
-}
-
-.photo-lightbox-close{
-    position:absolute;
-    top:18px;
-    right:20px;
-    width:44px;
-    height:44px;
-    border:0;
-    border-radius:50%;
-    background:#fff;
-    color:#111;
-    font-size:28px;
-    line-height:1;
-    cursor:pointer;
-}
-
-@media(max-width:480px){
-    .photos-gallery{
-        gap:8px;
+    .search {
+        width: 100%;
     }
-}
 
+    .client {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
 
-/* =====================================================
-   PER-PROFILE THEME COLOR
-===================================================== */
+    .client-actions {
+        margin-left: 67px;
+        flex-wrap: wrap;
+    }
 
-:root{
-    --profile-color:#111111;
-    --profile-color-soft:rgba(17,17,17,.10);
-}
+    .client-form {
+        grid-template-columns: 1fr;
+    }
 
-.profile-theme-accent{
-    color:var(--profile-color) !important;
-}
-
-.profile-theme-bg{
-    background:var(--profile-color) !important;
-    color:#fff !important;
-}
-
-
-
-/* Rich custom profile theme */
-.theme-custom-border{
-    border-color:var(--profile-color) !important;
-}
-
-
-/* FINAL PROFILE THEME */
-:root{
-    --profile-color:#111111;
-    --profile-color-soft:rgba(17,17,17,.10);
+    .full {
+        grid-column: auto;
+    }
 }
 
 </style>
-
 </head>
-
 
 <body>
 
+<!-- =====================================================
+     LOGIN
+===================================================== -->
 
-<div class="profile-page">
+<div class="login-page" id="loginPage">
 
+    <div class="login-box">
 
-    <!-- COVER -->
+        <div class="login-logo">
+            SmartLink NFC
+        </div>
 
-    <div
-        class="cover"
-        id="cover">
+        <div class="login-subtitle">
+            Admin Dashboard
+        </div>
 
-        <div class="profile-photo">
+        <div class="login-error" id="loginError"></div>
 
-            <img
-                id="profilePhoto"
-                src=""
-                alt="Profile"
-                style="display:none;">
+        <form id="loginForm">
 
-            <div
-                class="default-avatar"
-                id="defaultAvatar">
+            <div class="form-group">
 
-                👤
+                <label>Email</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Admin email"
+                    required>
 
             </div>
 
-        </div>
+            <div class="form-group">
+
+                <label>Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Password"
+                    required>
+
+            </div>
+
+            <button
+                class="login-btn"
+                id="loginButton"
+                type="submit">
+
+                Login
+
+            </button>
+
+        </form>
 
     </div>
 
-
-    <!-- LOADING -->
-
-    <div
-        class="loading"
-        id="loading">
-
-        <h1>
-            Loading...
-        </h1>
-
-        <p>
-            SmartLink NFC
-        </p>
-
-    </div>
+</div>
 
 
-    <!-- ERROR -->
+<!-- =====================================================
+     ADD / EDIT CLIENT MODAL
+===================================================== -->
 
-    <div
-        class="error hidden"
-        id="error">
+<div class="modal" id="clientModal">
 
-        <h1>
-            Profile not found
-        </h1>
+    <div class="modal-box">
 
-        <p>
-            Please check the profile link.
-        </p>
+        <div class="modal-header">
 
-    </div>
+            <h2 id="modalTitle">
+                Add Client
+            </h2>
 
+            <button
+                class="close-btn"
+                id="closeModal"
+                type="button">
 
-    <!-- PROFILE -->
+                ×
 
-    <div
-        class="content hidden"
-        id="profileContent">
+            </button>
 
-
-        <div
-            class="name"
-            id="name">
-        </div>
-
-
-        <div
-            class="job"
-            id="job">
         </div>
 
 
         <div
-            class="company"
-            id="company">
+            class="form-message"
+            id="formMessage">
         </div>
 
 
-        <!-- SAVE CONTACT -->
+        <form
+            id="clientForm"
+            class="client-form">
+
+
+            <div>
+
+                <label>Full Name *</label>
+
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Full Name"
+                    required>
+
+            </div>
+
+
+            <div>
+
+                <label>Profile Username / Slug</label>
+
+                <input
+                    type="text"
+                    name="slug"
+                    placeholder="samir">
+
+            </div>
+
+
+            <div>
+
+                <label>Job / Position</label>
+
+                <input
+                    type="text"
+                    name="job"
+                    placeholder="Job / Position">
+
+            </div>
+
+
+            <div>
+
+                <label>Company</label>
+
+                <input
+                    type="text"
+                    name="company"
+                    placeholder="Company">
+
+            </div>
+
+
+            <div>
+
+                <label>Phone 1</label>
+
+                <input
+                    type="text"
+                    name="phone"
+                    placeholder="+212...">
+
+            </div>
+
+            <div>
+
+                <label>Phone 2</label>
+
+                <input
+                    type="text"
+                    name="phone2"
+                    placeholder="+212...">
+
+            </div>
+
+            <div>
+
+                <label>Phone 3</label>
+
+                <input
+                    type="text"
+                    name="phone3"
+                    placeholder="+212...">
+
+            </div>
+
+
+            <div>
+
+                <label>WhatsApp 1</label>
+
+                <input
+                    type="text"
+                    name="whatsapp"
+                    placeholder="+212...">
+
+            </div>
+
+            <div>
+
+                <label>WhatsApp 2</label>
+
+                <input
+                    type="text"
+                    name="whatsapp2"
+                    placeholder="+212...">
+
+            </div>
+
+            <div>
+
+                <label>WhatsApp 3</label>
+
+                <input
+                    type="text"
+                    name="whatsapp3"
+                    placeholder="+212...">
+
+            </div>
+
+
+            <div>
+
+                <label>Email 1</label>
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="+212...">
+
+            </div>
+
+            <div>
+
+                <label>Email 2</label>
+
+                <input
+                    type="email"
+                    name="email2"
+                    placeholder="+212...">
+
+            </div>
+
+            <div>
+
+                <label>Email 3</label>
+
+                <input
+                    type="email"
+                    name="email3"
+                    placeholder="+212...">
+
+            </div>
+
+
+            <div>
+
+                <label>Website</label>
+
+                <input
+                    type="text"
+                    name="website"
+                    placeholder="https://...">
+
+            </div>
+
+
+            <div>
+
+                <label>Instagram</label>
+
+                <input
+                    type="text"
+                    name="instagram"
+                    placeholder="https://instagram.com/...">
+
+            </div>
+
+
+            <div>
+
+                <label>Facebook</label>
+
+                <input
+                    type="text"
+                    name="facebook"
+                    placeholder="https://facebook.com/...">
+
+            </div>
+
+
+            <div>
+
+                <label>LinkedIn</label>
+
+                <input
+                    type="text"
+                    name="linkedin"
+                    placeholder="https://linkedin.com/in/...">
+
+            </div>
+
+
+            <div>
+
+                <label>TikTok</label>
+
+                <input
+                    type="text"
+                    name="tiktok"
+                    placeholder="https://www.tiktok.com/@...">
+
+            </div>
+
+
+            <div>
+
+                <label>📍 Google Maps 1</label>
+
+                <input
+                    type="url"
+                    name="maps_link"
+                    placeholder="https://maps.google.com/...">
+
+            </div>
+
+            <div>
+
+                <label>Label Maps 1</label>
+
+                <input
+                    type="text"
+                    name="maps_label"
+                    placeholder="Magasin 1">
+
+            </div>
+
+            <div>
+
+                <label>📍 Google Maps 2</label>
+
+                <input
+                    type="url"
+                    name="maps_link2"
+                    placeholder="https://maps.google.com/...">
+
+            </div>
+
+            <div>
+
+                <label>Label Maps 2</label>
+
+                <input
+                    type="text"
+                    name="maps_label2"
+                    placeholder="Magasin 2">
+
+            </div>
+
+            <div>
+
+                <label>📍 Google Maps 3</label>
+
+                <input
+                    type="url"
+                    name="maps_link3"
+                    placeholder="https://maps.google.com/...">
+
+            </div>
+
+            <div>
+
+                <label>Label Maps 3</label>
+
+                <input
+                    type="text"
+                    name="maps_label3"
+                    placeholder="Magasin 3">
+
+            </div>
+
+            <div class="full">
+
+                <label>⭐ Google Reviews Link</label>
+
+                <input
+                    type="url"
+                    name="google_reviews_link"
+                    placeholder="https://g.page/r/.../review">
+
+            </div>
+
+
+            <!-- PROFILE PHOTO -->
+
+            <div class="file-box">
+
+                <label>📸 Profile Photo</label>
+
+                <input
+                    type="file"
+                    id="photoFile"
+                    accept="image/*">
+
+                <div
+                    class="preview"
+                    id="photoPreview">
+
+                    <img id="photoPreviewImg" src="" alt="">
+
+                </div>
+
+            </div>
+
+
+            <!-- COVER PHOTO -->
+
+            <div class="file-box">
+
+                <label>🖼️ Cover Photo</label>
+
+                <input
+                    type="file"
+                    id="coverFile"
+                    accept="image/*">
+
+                <div
+                    class="preview"
+                    id="coverPreview">
+
+                    <img id="coverPreviewImg" src="" alt="">
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PROFILE GALLERY -->
+            <div class="file-box full">
+
+                <label>🖼️ Photos Gallery (up to 10 photos)</label>
+
+                <input
+                    type="file"
+                    id="galleryFiles"
+                    accept="image/*"
+                    multiple>
+
+                <small style="display:block;margin-top:6px;color:#777;">
+                    Select up to 10 photos. They will appear as 2 × 2.
+                    When editing a client, new photos are added to the existing gallery.
+                </small>
+
+                <div
+                    id="galleryPreview"
+                    style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px;">
+                </div>
+
+            </div>
+
+
+
+            <div class="file-box full">
+                <label for="themeColor">🎨 Profile Color</label>
+
+                <div
+                    id="themePalette"
+                    style="display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:7px;margin:10px 0 12px;">
+                </div>
+
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <input
+                        type="color"
+                        id="themeColor"
+                        name="themeColor"
+                        value="#111111"
+                        style="width:58px;height:44px;padding:2px;border:1px solid #ddd;border-radius:10px;cursor:pointer;">
+
+                    <input
+                        type="text"
+                        id="themeColorHex"
+                        maxlength="7"
+                        value="#111111"
+                        placeholder="#111111"
+                        style="flex:1;padding:11px 12px;border:1px solid #ddd;border-radius:10px;">
+                </div>
+
+                <small style="display:block;margin-top:7px;color:#777;">
+                    اختار أي لون من palette أو استعمل Color Picker. تقدر تدخل أي HEX بغيتي.
+                </small>
+            </div>
+
+
+            <textarea
+                name="about"
+                placeholder="About / Bio"></textarea>
+
+
+            <div
+                class="progress full"
+                id="uploadProgress">
+            </div>
+
+
+            <div class="modal-actions full">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    id="cancelModal">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="save-btn"
+                    id="saveClientButton">
+
+                    Save Client
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<div class="dashboard" id="dashboard">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            SmartLink <span>NFC</span>
+        </div>
+
+
+        <nav class="menu">
+
+            <a
+                href="#"
+                class="active">
+
+                🏠 Dashboard
+
+            </a>
+
+            <a href="#clients">
+
+                👥 Clients
+
+            </a>
+
+            <a href="#">
+
+                📱 NFC Cards
+
+            </a>
+
+            <a href="#">
+
+                📊 Analytics
+
+            </a>
+
+        </nav>
+
 
         <button
-            class="save-contact"
-            id="saveContact">
+            class="logout"
+            id="logoutButton">
 
-            <i class="fa-solid fa-address-card brand-icon" aria-hidden="true"></i> Save Contact
+            🚪 Logout
 
         </button>
 
+    </aside>
 
-        <!-- ACTIONS -->
 
-        <div class="actions">
+    <main class="main">
 
-            <a class="action" id="callButton" href="#">
-                <div class="action-icon"><i class="fa-solid fa-phone"></i></div>
-                <div class="action-text">Call</div>
-            </a>
+        <div class="topbar">
 
-            <a class="action" id="callButton2" href="#">
-                <div class="action-icon"><i class="fa-solid fa-phone"></i></div>
-                <div class="action-text">Call 2</div>
-            </a>
+            <div>
 
-            <a class="action" id="callButton3" href="#">
-                <div class="action-icon"><i class="fa-solid fa-phone"></i></div>
-                <div class="action-text">Call 3</div>
-            </a>
+                <h1>
+                    Dashboard
+                </h1>
 
-            <a class="action" id="mapsButton" href="#" target="_blank" rel="noopener noreferrer">
-                <div class="action-icon"><i class="fa-solid fa-location-dot"></i></div>
-                <div class="action-text" id="mapsText">Google Maps</div>
-            </a>
+                <p>
+                    Manage your SmartLink NFC clients.
+                </p>
 
-            <a class="action" id="mapsButton2" href="#" target="_blank" rel="noopener noreferrer">
-                <div class="action-icon"><i class="fa-solid fa-location-dot"></i></div>
-                <div class="action-text" id="mapsText2">Magasin 2</div>
-            </a>
+            </div>
 
-            <a class="action" id="mapsButton3" href="#" target="_blank" rel="noopener noreferrer">
-                <div class="action-icon"><i class="fa-solid fa-location-dot"></i></div>
-                <div class="action-text" id="mapsText3">Magasin 3</div>
-            </a>
 
-            <a class="action" id="emailButton" href="#">
-                <div class="action-icon"><i class="fa-solid fa-envelope"></i></div>
-                <div class="action-text">Email</div>
-            </a>
+            <button
+                class="add-btn"
+                id="addClientButton"
+                type="button">
 
-            <a class="action" id="emailButton2" href="#">
-                <div class="action-icon"><i class="fa-solid fa-envelope"></i></div>
-                <div class="action-text">Email 2</div>
-            </a>
+                + Add Client
 
-            <a class="action" id="emailButton3" href="#">
-                <div class="action-icon"><i class="fa-solid fa-envelope"></i></div>
-                <div class="action-text">Email 3</div>
-            </a>
+            </button>
 
         </div>
 
 
-        <!-- ABOUT -->
+        <!-- STATISTICS -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <div class="card-title">
+                    Total Clients
+                </div>
+
+                <div
+                    class="card-number"
+                    id="totalClients">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Active Profiles
+                </div>
+
+                <div
+                    class="card-number"
+                    id="activeProfiles">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    NFC Cards
+                </div>
+
+                <div
+                    class="card-number"
+                    id="nfcCards">
+
+                    0
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CLIENTS -->
 
         <div
-            class="section"
-            id="aboutSection">
+            class="clients-box"
+            id="clients">
 
-            <h2>
-                About
-            </h2>
+            <div class="clients-header">
+
+                <h2>
+                    Clients
+                </h2>
+
+                <input
+                    class="search"
+                    id="searchClient"
+                    placeholder="Search client...">
+
+            </div>
+
 
             <div
-                class="about"
-                id="about">
-            </div>
+                class="client-list"
+                id="clientList">
 
-        </div>
-
-        <!-- GOOGLE REVIEWS -->
-        <div
-            class="section google-reviews-section"
-            id="googleReviewsSection">
-
-            <h2>⭐ Google Reviews</h2>
-
-            <div class="google-reviews-card">
-                <p>Share your experience</p>
-                <a
-                    class="google-review-btn"
-                    id="googleReviewsButton"
-                    href="#"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    <i class="fa-solid fa-star" aria-hidden="true"></i> Review Us
-                </a>
-            </div>
-
-        </div>
-
-        <!-- LINKS -->
-
-        <div
-            class="section"
-            id="linksSection">
-
-            <h2>
-                Connect
-            </h2>
-
-            <div class="links">
-
-
-                <a class="link hidden" id="whatsappLink" href="#" target="_blank" rel="noopener noreferrer">
-                    <i class="fa-brands fa-whatsapp brand-icon" aria-hidden="true"></i> WhatsApp
-                </a>
-
-                <a class="link hidden" id="whatsappLink2" href="#" target="_blank" rel="noopener noreferrer">
-                    <i class="fa-brands fa-whatsapp brand-icon" aria-hidden="true"></i> WhatsApp 2
-                </a>
-
-                <a class="link hidden" id="whatsappLink3" href="#" target="_blank" rel="noopener noreferrer">
-                    <i class="fa-brands fa-whatsapp brand-icon" aria-hidden="true"></i> WhatsApp 3
-                </a>
-
-
-                <a
-                    class="link hidden"
-                    id="websiteLink"
-                    href="#"
-                    target="_blank">
-
-                    <i class="fa-solid fa-globe brand-icon" aria-hidden="true"></i> Website
-
-                </a>
-
-
-                <a
-                    class="link hidden"
-                    id="instagramLink"
-                    href="#"
-                    target="_blank">
-
-                    <i class="fa-brands fa-instagram brand-icon" aria-hidden="true"></i> Instagram
-
-                </a>
-
-
-                <a
-                    class="link hidden"
-                    id="facebookLink"
-                    href="#"
-                    target="_blank">
-
-                    <i class="fa-brands fa-facebook-f brand-icon" aria-hidden="true"></i> Facebook
-
-                </a>
-
-
-                <a
-                    class="link hidden"
-                    id="linkedinLink"
-                    href="#"
-                    target="_blank">
-
-                    <i class="fa-brands fa-linkedin-in brand-icon" aria-hidden="true"></i> LinkedIn
-
-                </a>
-
-
-                <a
-                    class="link hidden"
-                    id="tiktokLink"
-                    href="#"
-                    target="_blank"
-                    rel="noopener noreferrer">
-
-                    <i class="fa-brands fa-tiktok brand-icon" aria-hidden="true"></i> TikTok
-
-                </a>
-
+                <div class="empty">
+                    Loading clients...
+                </div>
 
             </div>
 
         </div>
 
-
-        <!-- PHOTOS -->
-        <div
-            class="section photos-section hidden"
-            id="photosSection">
-
-            <h2>Photos</h2>
-
-            <div
-                class="photos-gallery"
-                id="photosGallery">
-            </div>
-
-        </div>
-
-
-    </div>
-
-
-
-<!-- PHOTO LIGHTBOX -->
-<div
-    class="photo-lightbox hidden"
-    id="photoLightbox">
-
-    <button
-        class="photo-lightbox-close"
-        id="photoLightboxClose"
-        type="button"
-        aria-label="Close">
-
-        ×
-
-    </button>
-
-    <img
-        id="photoLightboxImage"
-        src=""
-        alt="Photo">
+    </main>
 
 </div>
-
-
-    <div class="footer">
-
-        Powered by SmartLink NFC
-
-    </div>
-
-
-</div>
-
 
 
 <script>
 
-
-/* =====================================================
-   SUPABASE
-===================================================== */
+/* =========================================================
+   SUPABASE CONFIG
+========================================================= */
 
 const SUPABASE_URL =
     "https://sxnthstllporbicsdbjk.supabase.co";
-
 
 const SUPABASE_KEY =
     "sb_publishable_Jnbgc4Z3e4p1KvPSAggX0w_m17LC7G_";
@@ -818,1069 +1244,1672 @@ const supabaseClient =
     );
 
 
-/* =====================================================
+/* =========================================================
    ELEMENTS
-===================================================== */
+========================================================= */
 
-const loading =
-    document.getElementById("loading");
+const loginPage =
+    document.getElementById("loginPage");
 
-const errorBox =
-    document.getElementById("error");
+const dashboard =
+    document.getElementById("dashboard");
 
-const profileContent =
-    document.getElementById("profileContent");
+const loginForm =
+    document.getElementById("loginForm");
 
-const cover =
-    document.getElementById("cover");
+const loginButton =
+    document.getElementById("loginButton");
 
-const profilePhoto =
-    document.getElementById("profilePhoto");
+const loginError =
+    document.getElementById("loginError");
 
-const defaultAvatar =
-    document.getElementById("defaultAvatar");
+const logoutButton =
+    document.getElementById("logoutButton");
 
-const nameElement =
-    document.getElementById("name");
+const addClientButton =
+    document.getElementById("addClientButton");
 
-const jobElement =
-    document.getElementById("job");
-
-const companyElement =
-    document.getElementById("company");
+const clientModal =
+    document.getElementById("clientModal");
 
-const aboutElement =
-    document.getElementById("about");
+const closeModal =
+    document.getElementById("closeModal");
 
-const callButton =
-    document.getElementById("callButton");
-const callButton2 =
-    document.getElementById("callButton2");
-const callButton3 =
-    document.getElementById("callButton3");
+const cancelModal =
+    document.getElementById("cancelModal");
 
-const mapsButton =
-    document.getElementById("mapsButton");
-const mapsButton2 =
-    document.getElementById("mapsButton2");
-const mapsButton3 =
-    document.getElementById("mapsButton3");
-const mapsText =
-    document.getElementById("mapsText");
-const mapsText2 =
-    document.getElementById("mapsText2");
-const mapsText3 =
-    document.getElementById("mapsText3");
-
-const emailButton =
-    document.getElementById("emailButton");
-const emailButton2 =
-    document.getElementById("emailButton2");
-const emailButton3 =
-    document.getElementById("emailButton3");
-
-const saveContact =
-    document.getElementById("saveContact");
-
-const whatsappLink =
-    document.getElementById("whatsappLink");
-const whatsappLink2 =
-    document.getElementById("whatsappLink2");
-const whatsappLink3 =
-    document.getElementById("whatsappLink3");
-
-const aboutSection =
-    document.getElementById("aboutSection");
-
-const googleReviewsSection =
-    document.getElementById("googleReviewsSection");
-
-const googleReviewsButton =
-    document.getElementById("googleReviewsButton");
-
-const linksSection =
-    document.getElementById("linksSection");
-
-const photosSection =
-    document.getElementById("photosSection");
-
-const photosGallery =
-    document.getElementById("photosGallery");
+const clientForm =
+    document.getElementById("clientForm");
 
-const photoLightbox =
-    document.getElementById("photoLightbox");
+const saveClientButton =
+    document.getElementById("saveClientButton");
 
-const photoLightboxImage =
-    document.getElementById("photoLightboxImage");
+const formMessage =
+    document.getElementById("formMessage");
 
-const photoLightboxClose =
-    document.getElementById("photoLightboxClose");
+const modalTitle =
+    document.getElementById("modalTitle");
 
+const clientList =
+    document.getElementById("clientList");
 
-/* =====================================================
-   GET CLIENT ID
-===================================================== */
+const searchClient =
+    document.getElementById("searchClient");
 
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
+const totalClients =
+    document.getElementById("totalClients");
 
+const activeProfiles =
+    document.getElementById("activeProfiles");
 
-// Supports both the old ?id=UUID links and the new /slug links.
-const clientId =
-    params.get("id");
+const nfcCards =
+    document.getElementById("nfcCards");
 
-const pathParts =
-    window.location.pathname
-        .split("/")
-        .filter(Boolean);
+const photoFile =
+    document.getElementById("photoFile");
 
-// Supports all of these formats:
-// Custom domain:
-//   /luxobiobeaut
-//   /index.html/luxobiobeaut
-//
-// Old GitHub Pages links:
-//   /smartlinknfc/luxobiobeaut
-//   /smartlinknfc/index.html/luxobiobeaut
-let slugFromPath = null;
+const coverFile =
+    document.getElementById("coverFile");
 
-if(pathParts.length){
+const photoPreview =
+    document.getElementById("photoPreview");
 
-    const firstPart =
-        pathParts[0].toLowerCase();
+const photoPreviewImg =
+    document.getElementById("photoPreviewImg");
 
-    if(firstPart === "smartlinknfc"){
+const coverPreview =
+    document.getElementById("coverPreview");
 
-        // Old GitHub Pages project path.
-        if(pathParts[1]){
+const coverPreviewImg =
+    document.getElementById("coverPreviewImg");
 
-            const secondPart =
-                pathParts[1].toLowerCase();
+const galleryFiles =
+    document.getElementById("galleryFiles");
 
-            if(
-                secondPart === "index.html" ||
-                secondPart === "404.html" ||
-                secondPart === "admin.html"
-            ){
-                slugFromPath =
-                    pathParts[2]
-                        ? decodeURIComponent(pathParts[2])
-                        : null;
-            }else{
-                slugFromPath =
-                    decodeURIComponent(pathParts[1]);
-            }
-        }
+const galleryPreview =
+    document.getElementById("galleryPreview");
 
-    }else if(
-        firstPart === "index.html" ||
-        firstPart === "404.html" ||
-        firstPart === "admin.html"
-    ){
+const themeColor =
+    document.getElementById("themeColor");
 
-        // Direct HTML path, for backward compatibility.
-        slugFromPath =
-            pathParts[1]
-                ? decodeURIComponent(pathParts[1])
-                : null;
+const themeColorHex =
+    document.getElementById("themeColorHex");
 
-    }else{
+const uploadProgress =
+    document.getElementById("uploadProgress");
 
-        // Custom domain clean URL, e.g.:
-        // https://smartlinknfc.site/luxobiobeaut
-        slugFromPath =
-            decodeURIComponent(pathParts[0]);
-    }
-}
 
+let clients = [];
 
-/* =====================================================
-   SHOW ERROR
-===================================================== */
+let editingClientId = null;
 
-function showError(){
 
-    loading.classList.add("hidden");
+/* =========================================================
+   LOGIN
+========================================================= */
 
-    profileContent.classList.add("hidden");
+loginForm.addEventListener(
+    "submit",
+    async function(event){
 
-    errorBox.classList.remove("hidden");
+        event.preventDefault();
 
-}
+        loginError.style.display = "none";
 
+        loginButton.disabled = true;
 
-/* =====================================================
-   NORMALIZE PHONE
-===================================================== */
+        loginButton.textContent =
+            "Logging in...";
 
-function cleanPhone(phone){
 
-    if(!phone){
-        return "";
-    }
+        const email =
+            document
+                .getElementById("email")
+                .value
+                .trim();
 
-    return String(phone)
-        .replace(/[^\d+]/g,"");
 
-}
+        const password =
+            document
+                .getElementById("password")
+                .value;
 
 
-/* =====================================================
-   WHATSAPP PHONE
-===================================================== */
+        const { error } =
+            await supabaseClient.auth
+                .signInWithPassword({
+                    email: email,
+                    password: password
+                });
 
-function whatsappPhone(phone){
 
-    if(!phone){
-        return "";
-    }
+        if(error){
 
-    let value =
-        String(phone)
-        .replace(/\D/g,"");
+            loginError.textContent =
+                error.message;
 
+            loginError.style.display =
+                "block";
 
-    if(value.startsWith("0")){
+            loginButton.disabled =
+                false;
 
-        value =
-            "212" +
-            value.substring(1);
-
-    }
-
-
-    if(!value.startsWith("212") &&
-       value.length <= 10){
-
-        value =
-            "212" +
-            value;
-
-    }
-
-
-    return value;
-
-}
-
-
-/* =====================================================
-   URL HELPER
-===================================================== */
-
-function validUrl(url){
-
-    if(!url){
-        return "";
-    }
-
-    let value =
-        String(url).trim();
-
-
-    if(
-        !value.startsWith("http://") &&
-        !value.startsWith("https://")
-    ){
-
-        value =
-            "https://" +
-            value;
-
-    }
-
-
-    return value;
-
-}
-
-
-/* =====================================================
-   LOAD PROFILE
-===================================================== */
-
-
-function escapeVCard(value){
-    return String(value || "")
-        .replace(/\\/g, "\\\\")
-        .replace(/\r?\n/g, "\\n")
-        .replace(/;/g, "\\;")
-        .replace(/,/g, "\\,");
-}
-
-
-function applyProfileTheme(color){
-
-    const safeColor =
-        /^#[0-9a-fA-F]{6}$/.test(
-            String(color || "")
-        )
-            ? String(color)
-            : "#111111";
-
-    document.documentElement.style
-        .setProperty(
-            "--profile-color",
-            safeColor
-        );
-
-    document.documentElement.style
-        .setProperty(
-            "--profile-color-soft",
-            hexToRgba(safeColor, 0.10)
-        );
-
-    // Apply the chosen color to the visible profile UI.
-    document
-        .querySelectorAll(
-            ".save-contact-button, #saveContact, .theme-primary"
-        )
-        .forEach(function(el){
-
-            el.style.setProperty(
-                "background-color",
-                safeColor,
-                "important"
-            );
-
-            el.style.setProperty(
-                "border-color",
-                safeColor,
-                "important"
-            );
-
-        });
-
-    document
-        .querySelectorAll(
-            "h1, h2, .theme-accent"
-        )
-        .forEach(function(el){
-
-            el.style.setProperty(
-                "color",
-                safeColor,
-                "important"
-            );
-
-        });
-
-    document
-        .querySelectorAll(
-            ".link a, .social-link"
-        )
-        .forEach(function(el){
-
-            el.style.setProperty(
-                "border-color",
-                hexToRgba(safeColor, 0.22),
-                "important"
-            );
-
-        });
-}
-
-function hexToRgba(hex, alpha){
-
-    const clean =
-        String(hex)
-            .replace("#","");
-
-    if(clean.length !== 6){
-        return "rgba(17,17,17," + alpha + ")";
-    }
-
-    const r =
-        parseInt(clean.substring(0,2),16);
-
-    const g =
-        parseInt(clean.substring(2,4),16);
-
-    const b =
-        parseInt(clean.substring(4,6),16);
-
-    return (
-        "rgba(" +
-        r + "," +
-        g + "," +
-        b + "," +
-        alpha +
-        ")"
-    );
-}
-
-
-async function loadProfile(){
-
-    if(!clientId && !slugFromPath){
-
-        showError();
-
-        return;
-    }
-
-
-    console.log(
-        "Loading client:",
-        clientId
-    );
-
-
-    let data = null;
-    let error = null;
-
-    if (slugFromPath) {
-        const result =
-            await supabaseClient
-                .from("Clients")
-                .select("*")
-                .eq("slug", slugFromPath)
-                .maybeSingle();
-
-        data = result.data;
-        error = result.error;
-    } else if (clientId) {
-        const result =
-            await supabaseClient
-                .from("Clients")
-                .select("*")
-                .eq("id", clientId)
-                .maybeSingle();
-
-        data = result.data;
-        error = result.error;
-    }
-
-
-    console.log(
-        "Supabase result:",
-        data,
-        error
-    );
-
-
-    if(error){
-
-        console.error(
-            "Supabase error:",
-            error
-        );
-
-        showError();
-
-        return;
-    }
-
-
-    if(!data){
-
-        console.error(
-            "No client found for ID:",
-            clientId
-        );
-
-        showError();
-
-        return;
-    }
-
-
-    renderProfile(data);
-
-}
-
-
-/* =====================================================
-   RENDER PROFILE
-===================================================== */
-
-function renderProfile(client){
-
-    console.log(
-        "Client loaded:",
-        client
-    );
-
-    console.log("SmartLink 2/3 fields:", {
-        phone2: client.phone2 ?? client.phone_2,
-        phone3: client.phone3 ?? client.phone_3,
-        whatsapp2: client.whatsapp2 ?? client.whatsapp_2,
-        whatsapp3: client.whatsapp3 ?? client.whatsapp_3,
-        email2: client.email2 ?? client.email_2,
-        email3: client.email3 ?? client.email_3,
-        maps2: client.maps_link2 ?? client.maps_link_2,
-        maps3: client.maps_link3 ?? client.maps_link_3
-    });
-
-
-    /* NAME */
-
-    nameElement.textContent =
-        client.name ||
-        "SmartLink NFC";
-
-
-    /* JOB */
-
-    if(client.job){
-
-        jobElement.textContent =
-            client.job;
-
-        jobElement.style.display =
-            "block";
-
-    }else{
-
-        jobElement.style.display =
-            "none";
-
-    }
-
-
-    /* COMPANY */
-
-    if(client.company){
-
-        companyElement.textContent =
-            client.company;
-
-        companyElement.style.display =
-            "block";
-
-    }else{
-
-        companyElement.style.display =
-            "none";
-
-    }
-
-
-    /* PROFILE PHOTO */
-
-    if(client.photo){
-
-        profilePhoto.src =
-            client.photo;
-
-        profilePhoto.style.display =
-            "block";
-
-        defaultAvatar.style.display =
-            "none";
-
-    }else{
-
-        profilePhoto.style.display =
-            "none";
-
-        defaultAvatar.style.display =
-            "block";
-
-    }
-
-
-    /* COVER PHOTO */
-
-    if(client.cover){
-
-        cover.style.backgroundImage =
-            "url('" +
-            client.cover +
-            "')";
-
-    }else{
-
-        cover.style.backgroundImage =
-            "linear-gradient(135deg,#111,#292929)";
-
-    }
-
-
-    /* PHONE 1 / 2 / 3 */
-    setupPhoneAction("callButton", client.phone, "Call");
-    setupPhoneAction("callButton2", (client.phone2 ?? client.phone_2), "Call 2");
-    setupPhoneAction("callButton3", (client.phone3 ?? client.phone_3), "Call 3");
-
-    /* GOOGLE MAPS 1 / 2 / 3 */
-    setupMapsAction("mapsButton", "mapsText", client.maps_link, client.maps_label || "Google Maps");
-    setupMapsAction("mapsButton2", "mapsText2", (client.maps_link2 ?? client.maps_link_2), (client.maps_label2 ?? client.maps_label_2) || "Magasin 2");
-    setupMapsAction("mapsButton3", "mapsText3", (client.maps_link3 ?? client.maps_link_3), (client.maps_label3 ?? client.maps_label_3) || "Magasin 3");
-
-    /* EMAIL 1 / 2 / 3 */
-    setupEmailAction("emailButton", client.email, "Email");
-    setupEmailAction("emailButton2", (client.email2 ?? client.email_2), "Email 2");
-    setupEmailAction("emailButton3", (client.email3 ?? client.email_3), "Email 3");
-
-    /* ABOUT */
-
-    if(client.about){
-
-        aboutElement.textContent =
-            client.about;
-
-    }else{
-
-        aboutElement.textContent =
-            "Welcome to my digital business card.";
-
-    }
-
-
-    /* GOOGLE REVIEWS - ONLY SHOW WHEN A LINK EXISTS */
-    const googleReviewsUrl = String(client.google_reviews_link || "").trim();
-
-    if(googleReviewsUrl){
-        googleReviewsButton.href = googleReviewsUrl;
-        googleReviewsSection.style.display = "block";
-    }else{
-        googleReviewsButton.href = "#";
-        googleReviewsSection.style.display = "none";
-    }
-
-
-    /* WHATSAPP 1 / 2 / 3 */
-    setupWhatsAppLink("whatsappLink", client.whatsapp || null);
-    setupWhatsAppLink("whatsappLink2", (client.whatsapp2 ?? client.whatsapp_2) || null);
-    setupWhatsAppLink("whatsappLink3", (client.whatsapp3 ?? client.whatsapp_3) || null);
-
-    /* WEBSITE */
-
-    setupLink(
-        "websiteLink",
-        client.website
-    );
-
-
-    /* INSTAGRAM */
-
-    setupLink(
-        "instagramLink",
-        client.instagram
-    );
-
-
-    /* FACEBOOK */
-
-    setupLink(
-        "facebookLink",
-        client.facebook
-    );
-
-
-    /* LINKEDIN */
-
-    setupLink(
-        "linkedinLink",
-        client.linkedin
-    );
-
-
-    /* TIKTOK */
-
-    setupLink(
-        "tiktokLink",
-        client.tiktok
-    );
-
-
-    /* HIDE EMPTY LINK SECTION */
-
-    const visibleLinks =
-        document.querySelectorAll(
-            "#linksSection .link:not(.hidden)"
-        );
-
-
-    if(visibleLinks.length === 0){
-
-        linksSection.style.display =
-            "none";
-
-    }else{
-
-        linksSection.style.display =
-            "block";
-
-    }
-
-
-
-    /* PHOTOS */
-    let photos = [];
-
-    if(Array.isArray(client.photos)){
-        photos = client.photos.filter(Boolean);
-    }else if(typeof client.photos === "string"){
-        try{
-            const parsed = JSON.parse(client.photos);
-            if(Array.isArray(parsed)){
-                photos = parsed.filter(Boolean);
-            }
-        }catch(e){
-            photos = client.photos
-                .split(",")
-                .map(function(item){ return item.trim(); })
-                .filter(Boolean);
-        }
-    }
-
-    photos = photos.slice(0,10);
-
-    if(photos.length){
-
-        photosGallery.innerHTML =
-            photos.map(function(photo, index){
-
-                return `
-                    <div class="photo-item" data-photo-index="${index}">
-                        <img
-                            src="${validUrl(photo)}"
-                            alt="Photo ${index + 1}"
-                            loading="lazy">
-                    </div>
-                `;
-
-            }).join("");
-
-        photosSection.classList.remove("hidden");
-
-        photosGallery
-            .querySelectorAll(".photo-item")
-            .forEach(function(item){
-
-                item.addEventListener(
-                    "click",
-                    function(){
-
-                        const index =
-                            Number(
-                                item.dataset.photoIndex
-                            );
-
-                        photoLightboxImage.src =
-                            validUrl(photos[index]);
-
-                        photoLightbox.classList.remove(
-                            "hidden"
-                        );
-
-                    }
-                );
-
-            });
-
-    }else{
-
-        photosSection.classList.add("hidden");
-
-    }
-
-    /* PROFILE THEME */
-    applyProfileTheme(
-        client.theme_color ||
-        client.themeColor ||
-        "#111111"
-    );
-
-    document
-        .querySelectorAll(
-            "h1, h2"
-        )
-        .forEach(function(el){
-            el.classList.add("theme-accent");
-        });
-
-    /* SHOW PROFILE */
-
-    loading.classList.add(
-        "hidden"
-    );
-
-    errorBox.classList.add(
-        "hidden"
-    );
-
-    profileContent.classList.remove(
-        "hidden"
-    );
-
-}
-
-
-function setupPhoneAction(elementId, phone, label){
-    const element = document.getElementById(elementId);
-    if(!element) return;
-    const value = cleanPhone(phone);
-    if(value){
-        element.href = "tel:" + value;
-        element.querySelector(".action-text").textContent = label;
-        element.style.display = "flex";
-    }else{
-        element.style.display = "none";
-    }
-}
-
-function setupMapsAction(elementId, textId, url, label){
-    const element = document.getElementById(elementId);
-    const text = document.getElementById(textId);
-    if(!element) return;
-    if(url){
-        element.href = validUrl(url);
-        if(text) text.textContent = label || "Google Maps";
-        element.style.display = "flex";
-    }else{
-        element.style.display = "none";
-    }
-}
-
-function setupEmailAction(elementId, email, label){
-    const element = document.getElementById(elementId);
-    if(!element) return;
-    if(email){
-        element.href = "mailto:" + email;
-        element.querySelector(".action-text").textContent = label;
-        element.style.display = "flex";
-    }else{
-        element.style.display = "none";
-    }
-}
-
-function setupWhatsAppLink(elementId, phone){
-    if(!phone){
-        setupLink(elementId, null);
-        return;
-    }
-    const number = whatsappPhone(phone);
-    setupLink(elementId, number ? "https://wa.me/" + number : null);
-}
-
-
-/* =====================================================
-   SETUP LINK
-===================================================== */
-
-function setupLink(
-    elementId,
-    url
-){
-
-    const element =
-        document.getElementById(
-            elementId
-        );
-
-
-    if(!url){
-
-        element.classList.add(
-            "hidden"
-        );
-
-        return;
-    }
-
-
-    element.href =
-        validUrl(url);
-
-
-    element.classList.remove(
-        "hidden"
-    );
-
-}
-
-
-/* =====================================================
-   SAVE CONTACT
-===================================================== */
-
-let currentClient =
-    null;
-
-
-async function loadProfileAndSetContact(){
-
-    if(!clientId && !slugFromPath){
-        return;
-    }
-
-
-    let data = null;
-
-    if (slugFromPath) {
-        const result =
-            await supabaseClient
-                .from("Clients")
-                .select("*")
-                .eq("slug", slugFromPath)
-                .maybeSingle();
-
-        data = result.data;
-    } else if (clientId) {
-        const result =
-            await supabaseClient
-                .from("Clients")
-                .select("*")
-                .eq("id", clientId)
-                .maybeSingle();
-
-        data = result.data;
-    }
-
-
-    if(data){
-
-        currentClient =
-            data;
-
-    }
-
-}
-
-
-saveContact.addEventListener(
-    "click",
-    async function(){
-
-        if(!currentClient){
-
-            await loadProfileAndSetContact();
-
-        }
-
-
-        if(!currentClient){
-
-            alert(
-                "Contact information is not available."
-            );
+            loginButton.textContent =
+                "Login";
 
             return;
         }
 
 
-        const client =
-            currentClient;
+        showDashboard();
 
 
-        const vCard =
-`BEGIN:VCARD
-VERSION:3.0
-N:${escapeVCard(client.name || "")};;;
-FN:${escapeVCard(client.name || "")}
-ORG:${escapeVCard(client.company || "")}
-TITLE:${escapeVCard(client.job || "")}
-TEL;TYPE=CELL,VOICE:${escapeVCard(client.phone || "")}
-TEL;TYPE=CELL,VOICE:${escapeVCard((client.phone2 ?? client.phone_2) || "")}
-TEL;TYPE=CELL,VOICE:${escapeVCard((client.phone3 ?? client.phone_3) || "")}
-EMAIL;TYPE=INTERNET:${escapeVCard(client.email || "")}
-EMAIL;TYPE=INTERNET:${escapeVCard((client.email2 ?? client.email_2) || "")}
-EMAIL;TYPE=INTERNET:${escapeVCard((client.email3 ?? client.email_3) || "")}
-URL;TYPE=WORK:${escapeVCard(client.website || "")}
-X-SOCIALPROFILE;TYPE=instagram:${escapeVCard(client.instagram || "")}
-X-SOCIALPROFILE;TYPE=facebook:${escapeVCard(client.facebook || "")}
-X-SOCIALPROFILE;TYPE=linkedin:${escapeVCard(client.linkedin || "")}
-X-SOCIALPROFILE;TYPE=tiktok:${escapeVCard(client.tiktok || "")}
-X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard(client.whatsapp ? "https://wa.me/" + whatsappPhone(client.whatsapp) : "")}
-X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard((client.whatsapp2 ?? client.whatsapp_2) ? "https://wa.me/" + whatsappPhone((client.whatsapp2 ?? client.whatsapp_2)) : "")}
-X-SOCIALPROFILE;TYPE=whatsapp:${escapeVCard((client.whatsapp3 ?? client.whatsapp_3) ? "https://wa.me/" + whatsappPhone((client.whatsapp3 ?? client.whatsapp_3)) : "")}
-URL:${escapeVCard(client.website || "")}
-item1.URL:${escapeVCard(client.maps_link || "")}
-item1.X-ABLabel:${escapeVCard(client.maps_label || "Magasin 1")}
-item2.URL:${escapeVCard((client.maps_link2 ?? client.maps_link_2) || "")}
-item2.X-ABLabel:${escapeVCard((client.maps_label2 ?? client.maps_label_2) || "Magasin 2")}
-item3.URL:${escapeVCard((client.maps_link3 ?? client.maps_link_3) || "")}
-item3.X-ABLabel:${escapeVCard((client.maps_label3 ?? client.maps_label_3) || "Magasin 3")}
-NOTE:${escapeVCard(client.about || "")}
-END:VCARD`;
+        loginButton.disabled =
+            false;
 
-
-        const blob =
-            new Blob(
-                [vCard],
-                {
-                    type:"text/vcard;charset=utf-8"
-                }
-            );
-
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-
-        const a =
-            document.createElement("a");
-
-
-        a.href =
-            url;
-
-
-        a.download =
-            (client.name ||
-             "contact") +
-            ".vcf";
-
-
-        document.body.appendChild(a);
-
-        a.click();
-
-        a.remove();
-
-
-        URL.revokeObjectURL(
-            url
-        );
+        loginButton.textContent =
+            "Login";
 
     }
 );
 
 
+/* =========================================================
+   SESSION
+========================================================= */
 
-/* =====================================================
-   PHOTO LIGHTBOX
-===================================================== */
+async function checkSession(){
 
-photoLightboxClose.addEventListener(
+    const { data } =
+        await supabaseClient.auth
+            .getSession();
+
+
+    if(data.session){
+
+        showDashboard();
+
+    }else{
+
+        showLogin();
+
+    }
+}
+
+
+function showDashboard(){
+
+    loginPage.style.display =
+        "none";
+
+    dashboard.style.display =
+        "block";
+
+    loadClients();
+}
+
+
+function showLogin(){
+
+    loginPage.style.display =
+        "flex";
+
+    dashboard.style.display =
+        "none";
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+logoutButton.addEventListener(
+    "click",
+    async function(){
+
+        await supabaseClient.auth.signOut();
+
+        showLogin();
+
+    }
+);
+
+
+/* =========================================================
+   OPEN ADD CLIENT
+========================================================= */
+
+addClientButton.addEventListener(
     "click",
     function(){
-        photoLightbox.classList.add("hidden");
-        photoLightboxImage.src = "";
+
+        editingClientId = null;
+
+        modalTitle.textContent =
+            "Add Client";
+
+        saveClientButton.textContent =
+            "Save Client";
+
+        clientForm.reset();
+
+        resetPreviews();
+
+        hideMessage();
+
+        clientModal.style.display =
+            "flex";
+
     }
 );
 
-photoLightbox.addEventListener(
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function closeClientModal(){
+
+    clientModal.style.display =
+        "none";
+
+    editingClientId = null;
+
+    clientForm.reset();
+
+    resetPreviews();
+
+    hideMessage();
+
+    uploadProgress.style.display =
+        "none";
+}
+
+
+closeModal.addEventListener(
+    "click",
+    closeClientModal
+);
+
+
+cancelModal.addEventListener(
+    "click",
+    closeClientModal
+);
+
+
+clientModal.addEventListener(
     "click",
     function(event){
 
-        if(event.target === photoLightbox){
-            photoLightbox.classList.add("hidden");
-            photoLightboxImage.src = "";
+        if(event.target === clientModal){
+
+            closeClientModal();
+
         }
 
     }
 );
 
 
-/* =====================================================
-   START
-===================================================== */
+/* =========================================================
+   IMAGE PREVIEW
+========================================================= */
 
-loadProfile()
-    .then(
-        loadProfileAndSetContact
+photoFile.addEventListener(
+    "change",
+    function(){
+
+        previewFile(
+            photoFile.files[0],
+            photoPreview,
+            photoPreviewImg
+        );
+
+    }
+);
+
+
+coverFile.addEventListener(
+    "change",
+    function(){
+
+        previewFile(
+            coverFile.files[0],
+            coverPreview,
+            coverPreviewImg
+        );
+
+    }
+);
+
+
+function previewFile(
+    file,
+    container,
+    image
+){
+
+    if(!file){
+
+        container.style.display =
+            "none";
+
+        return;
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(event){
+
+            image.src =
+                event.target.result;
+
+            container.style.display =
+                "block";
+
+        };
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+
+galleryFiles.addEventListener(
+    "change",
+    function(){
+
+        galleryPreview.innerHTML = "";
+
+        const files =
+            Array.from(galleryFiles.files)
+                .slice(0,10);
+
+        files.forEach(function(file){
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                function(event){
+
+                    const img =
+                        document.createElement("img");
+
+                    img.src =
+                        event.target.result;
+
+                    img.alt =
+                        "Gallery preview";
+
+                    img.style.width =
+                        "100%";
+
+                    img.style.aspectRatio =
+                        "1 / 1";
+
+                    img.style.objectFit =
+                        "cover";
+
+                    img.style.borderRadius =
+                        "10px";
+
+                    galleryPreview.appendChild(img);
+
+                };
+
+            reader.readAsDataURL(file);
+
+        });
+
+        if(galleryFiles.files.length > 4){
+
+            showMessage(
+                "Only the first 10 gallery photos will be used.",
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+
+function normalizeThemeColor(value){
+
+    const v =
+        String(value || "").trim();
+
+    if(/^#[0-9a-fA-F]{6}$/.test(v)){
+        return v.toLowerCase();
+    }
+
+    return "#111111";
+}
+
+
+const themePalette =
+    document.getElementById("themePalette");
+
+const themePaletteColors = [
+    "#111111","#FFFFFF","#F5F5F5","#808080","#D4AF37",
+    "#FF0000","#FF4D4D","#FF7A00","#FFA500","#FFD700",
+    "#FFFF00","#9ACD32","#00A86B","#00C853","#00FFFF",
+    "#00BFFF","#007BFF","#0066FF","#4169E1","#0000FF",
+    "#6A0DAD","#8A2BE2","#9B59B6","#FF00FF","#E91E63",
+    "#FF1493","#795548","#8B4513","#C0C0C0","#2F4F4F"
+];
+
+themePaletteColors.forEach(function(color){
+
+    const button =
+        document.createElement("button");
+
+    button.type =
+        "button";
+
+    button.title =
+        color;
+
+    button.style.width =
+        "100%";
+
+    button.style.aspectRatio =
+        "1 / 1";
+
+    button.style.borderRadius =
+        "9px";
+
+    button.style.border =
+        color.toLowerCase() === "#ffffff"
+            ? "1px solid #ccc"
+            : "1px solid rgba(0,0,0,.08)";
+
+    button.style.background =
+        color;
+
+    button.style.cursor =
+        "pointer";
+
+    button.addEventListener(
+        "click",
+        function(){
+
+            themeColor.value =
+                color;
+
+            themeColorHex.value =
+                color;
+
+            updateSelectedThemeColor();
+
+        }
     );
 
+    themePalette.appendChild(button);
+
+});
+
+function updateSelectedThemeColor(){
+
+    const selected =
+        normalizeThemeColor(
+            themeColor.value
+        );
+
+    themePalette
+        .querySelectorAll("button")
+        .forEach(function(button){
+
+            const active =
+                button.title.toLowerCase() ===
+                selected.toLowerCase();
+
+            button.style.outline =
+                active
+                    ? "3px solid #111"
+                    : "none";
+
+            button.style.outlineOffset =
+                active
+                    ? "2px"
+                    : "0";
+
+        });
+
+}
+
+themeColor.addEventListener(
+    "input",
+    function(){
+
+        const value =
+            normalizeThemeColor(themeColor.value);
+
+        themeColorHex.value =
+            value;
+
+        updateSelectedThemeColor();
+
+    }
+);
+
+themeColorHex.addEventListener(
+    "input",
+    function(){
+
+        const value =
+            String(themeColorHex.value || "").trim();
+
+        if(/^#[0-9a-fA-F]{6}$/.test(value)){
+
+            themeColor.value =
+                value;
+
+            updateSelectedThemeColor();
+
+        }
+
+    }
+);
+
+updateSelectedThemeColor();
+
+
+function resetPreviews(){
+
+    photoPreview.style.display =
+        "none";
+
+    coverPreview.style.display =
+        "none";
+
+    photoPreviewImg.src =
+        "";
+
+    coverPreviewImg.src =
+        "";
+
+    galleryPreview.innerHTML =
+        "";
+
+    if(themeColor){
+        themeColor.value =
+            "#111111";
+    }
+
+    if(themeColorHex){
+        themeColorHex.value =
+            "#111111";
+    }
+
+    updateSelectedThemeColor();
+
+    if(galleryFiles){
+        galleryFiles.value =
+            "";
+    }
+
+}
+
+
+/* =========================================================
+   UPLOAD IMAGE
+========================================================= */
+
+async function uploadImage(
+    file,
+    bucket,
+    clientId,
+    type
+){
+
+    if(!file){
+
+        return null;
+    }
+
+
+    const extension =
+        file.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+    const fileName =
+        clientId +
+        "-" +
+        Date.now() +
+        "." +
+        extension;
+
+
+    const filePath =
+        clientId +
+        "/" +
+        fileName;
+
+
+    const { error } =
+        await supabaseClient.storage
+            .from(bucket)
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl: "3600",
+                    upsert: true,
+                    contentType: file.type
+                }
+            );
+
+
+    if(error){
+
+        throw error;
+
+    }
+
+
+    const { data } =
+        supabaseClient.storage
+            .from(bucket)
+            .getPublicUrl(filePath);
+
+
+    return data.publicUrl;
+
+}
+
+
+/* =========================================================
+   SAVE / UPDATE CLIENT
+========================================================= */
+
+clientForm.addEventListener(
+    "submit",
+    async function(event){
+
+        event.preventDefault();
+
+
+        saveClientButton.disabled =
+            true;
+
+        saveClientButton.textContent =
+            "Saving...";
+
+
+        hideMessage();
+
+
+        try {
+
+            const formData =
+                new FormData(clientForm);
+
+
+            const client = {
+
+                name:
+                    formData.get("name")?.trim() || null,
+
+                slug:
+                    (formData.get("slug")?.trim().toLowerCase()
+                        .replace(/[^a-z0-9-]+/g, "-")
+                        .replace(/^-+|-+$/g, "")) || null,
+
+                job:
+                    formData.get("job")?.trim() || null,
+
+                company:
+                    formData.get("company")?.trim() || null,
+
+                phone:
+                    formData.get("phone")?.trim() || null,
+
+                phone2:
+                    formData.get("phone2")?.trim() || null,
+
+                phone3:
+                    formData.get("phone3")?.trim() || null,
+
+                whatsapp:
+                    formData.get("whatsapp")?.trim() || null,
+
+                whatsapp2:
+                    formData.get("whatsapp2")?.trim() || null,
+
+                whatsapp3:
+                    formData.get("whatsapp3")?.trim() || null,
+
+                email:
+                    formData.get("email")?.trim() || null,
+
+                email2:
+                    formData.get("email2")?.trim() || null,
+
+                email3:
+                    formData.get("email3")?.trim() || null,
+
+                website:
+                    formData.get("website")?.trim() || null,
+
+                instagram:
+                    formData.get("instagram")?.trim() || null,
+
+                facebook:
+                    formData.get("facebook")?.trim() || null,
+
+                linkedin:
+                    formData.get("linkedin")?.trim() || null,
+
+                tiktok:
+                    formData.get("tiktok")?.trim() || null,
+
+                maps_link:
+                    formData.get("maps_link")?.trim() || null,
+
+                maps_label:
+                    formData.get("maps_label")?.trim() || null,
+
+                maps_link2:
+                    formData.get("maps_link2")?.trim() || null,
+
+                maps_label2:
+                    formData.get("maps_label2")?.trim() || null,
+
+                maps_link3:
+                    formData.get("maps_link3")?.trim() || null,
+
+                maps_label3:
+                    formData.get("maps_label3")?.trim() || null,
+
+                google_reviews_link:
+                    formData.get("google_reviews_link")?.trim() || null,
+
+                about:
+                    formData.get("about")?.trim() || null,
+
+                theme_color:
+                    normalizeThemeColor(
+                        themeColor.value
+                    ),
+
+                photos:
+                    editingClientId
+                        ? (
+                            Array.isArray(
+                                clients.find(function(item){
+                                    return String(item.id) === String(editingClientId);
+                                })?.photos
+                            )
+                                ? clients.find(function(item){
+                                    return String(item.id) === String(editingClientId);
+                                }).photos
+                                : []
+                          )
+                        : []
+
+            };
+
+
+            /* =================================================
+               CREATE CLIENT FIRST
+            ================================================= */
+
+            let clientId =
+                editingClientId;
+
+            if(!client.slug && client.name){
+                client.slug = client.name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .replace(/^-+|-+$/g, "");
+            }
+
+
+            if(!editingClientId){
+
+                const { data, error } =
+                    await supabaseClient
+                        .from("Clients")
+                        .insert([client])
+                        .select("id")
+                        .single();
+
+
+                if(error){
+
+                    throw error;
+
+                }
+
+
+                clientId =
+                    data.id;
+
+            }
+
+
+            /* =================================================
+               UPLOAD PHOTO
+            ================================================= */
+
+            if(photoFile.files[0]){
+
+                uploadProgress.style.display =
+                    "block";
+
+                uploadProgress.textContent =
+                    "Uploading profile photo...";
+
+
+                client.photo =
+                    await uploadImage(
+                        photoFile.files[0],
+                        "profile-photos",
+                        clientId,
+                        "photo"
+                    );
+
+            }
+
+
+            /* =================================================
+               UPLOAD COVER
+            ================================================= */
+
+            if(coverFile.files[0]){
+
+                uploadProgress.textContent =
+                    "Uploading cover photo...";
+
+
+                client.cover =
+                    await uploadImage(
+                        coverFile.files[0],
+                        "cover-photos",
+                        clientId,
+                        "cover"
+                    );
+
+            }
+
+
+
+            /* =================================================
+               UPLOAD GALLERY PHOTOS
+            ================================================= */
+
+            if(galleryFiles.files.length){
+
+                uploadProgress.style.display =
+                    "block";
+
+                uploadProgress.textContent =
+                    "Uploading gallery photos...";
+
+                const selectedGalleryFiles =
+                    Array.from(galleryFiles.files)
+                        .slice(0,10);
+
+                const existingGalleryUrls =
+                    Array.isArray(client.photos)
+                        ? client.photos
+                        : [];
+
+                const galleryUrls =
+                    existingGalleryUrls.slice(0,10);
+
+                for(
+                    let i = 0;
+                    i < selectedGalleryFiles.length &&
+                        galleryUrls.length < 10;
+                    i++
+                ){
+
+                    uploadProgress.textContent =
+                        "Uploading gallery photo " +
+                        (i + 1) +
+                        " of " +
+                        selectedGalleryFiles.length +
+                        "...";
+
+                    const galleryUrl =
+                        await uploadImage(
+                            selectedGalleryFiles[i],
+                            "profile-photos",
+                            clientId,
+                            "gallery-" +
+                                (galleryUrls.length + 1)
+                        );
+
+                    if(galleryUrl){
+                        galleryUrls.push(galleryUrl);
+                    }
+
+                }
+
+                client.photos =
+                    galleryUrls.slice(0,10);
+
+            }
+
+
+            /* =================================================
+               UPDATE CLIENT
+            ================================================= */
+
+            if(editingClientId){
+
+                const { error } =
+                    await supabaseClient
+                        .from("Clients")
+                        .update({
+                            ...client,
+                            theme_color:
+                                normalizeThemeColor(
+                                    themeColor.value
+                                )
+                        })
+                        .eq(
+                            "id",
+                            editingClientId
+                        );
+
+
+                if(error){
+
+                    throw error;
+
+                }
+
+            }else{
+
+                /*
+                 * If new client was created,
+                 * update it with photo/cover URLs.
+                 */
+
+                if(
+                    client.photo ||
+                    client.cover ||
+                    client.photos
+                ){
+
+                    const { error } =
+                        await supabaseClient
+                            .from("Clients")
+                            .update({
+                                photo:
+                                    client.photo || null,
+
+                                cover:
+                                    client.cover || null,
+
+                                photos:
+                                    client.photos || []
+                            })
+                            .eq(
+                                "id",
+                                clientId
+                            );
+
+
+                    if(error){
+
+                        throw error;
+
+                    }
+
+                }
+
+            }
+
+
+            showMessage(
+                editingClientId
+                    ? "Client updated successfully!"
+                    : "Client added successfully!",
+                "success"
+            );
+
+
+            await loadClients();
+
+
+            setTimeout(
+                closeClientModal,
+                800
+            );
+
+
+        } catch(error){
+
+            console.error(error);
+
+            showMessage(
+                "Error: " +
+                error.message,
+                "error"
+            );
+
+        }
+
+
+        saveClientButton.disabled =
+            false;
+
+        saveClientButton.textContent =
+            editingClientId
+                ? "Update Client"
+                : "Save Client";
+
+    }
+);
+
+
+/* =========================================================
+   LOAD CLIENTS
+========================================================= */
+
+async function loadClients(){
+
+    const { data, error } =
+        await supabaseClient
+            .from("Clients")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+
+    if(error){
+
+        console.error(error);
+
+        clientList.innerHTML = `
+            <div class="empty">
+                Error loading clients:<br>
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+
+        return;
+    }
+
+
+    clients =
+        data || [];
+
+
+    totalClients.textContent =
+        clients.length;
+
+
+    activeProfiles.textContent =
+        clients.length;
+
+
+    /*
+     * NFC cards are managed later.
+     */
+
+    nfcCards.textContent =
+        0;
+
+
+    renderClients(clients);
+
+}
+
+
+/* =========================================================
+   RENDER CLIENTS
+========================================================= */
+
+function renderClients(list){
+
+    if(!list.length){
+
+        clientList.innerHTML = `
+            <div class="empty">
+                No clients found.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    clientList.innerHTML =
+        list.map(
+            function(client){
+
+                const avatar =
+                    client.photo
+                    ?
+                    `<img
+                        src="${escapeAttribute(client.photo)}"
+                        alt="">`
+                    :
+                    "👤";
+
+
+                return `
+
+                    <div class="client">
+
+                        <div class="client-info">
+
+                            <div class="avatar">
+                                ${avatar}
+                            </div>
+
+                            <div>
+
+                                <div class="client-name">
+                                    ${escapeHtml(
+                                        client.name ||
+                                        "Unnamed Client"
+                                    )}
+                                </div>
+
+                                <div class="client-company">
+                                    ${escapeHtml(
+                                        client.company ||
+                                        client.job ||
+                                        "No company"
+                                    )}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="client-actions">
+
+                            <span class="status">
+                                Active
+                            </span>
+
+
+                            <button
+                                class="action-btn view-btn"
+                                onclick="viewClient('${client.id}')">
+
+                                👁 View
+
+                            </button>
+
+
+                            <button
+                                class="action-btn edit-btn"
+                                onclick="editClient('${client.id}')">
+
+                                ✏️ Edit
+
+                            </button>
+
+
+                            <button
+                                class="action-btn delete-btn"
+                                onclick="deleteClient('${client.id}')">
+
+                                🗑 Delete
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =========================================================
+   VIEW PROFILE
+========================================================= */
+
+function viewClient(id){
+
+    const client =
+        clients.find(
+            function(item){
+                return String(item.id) === String(id);
+            }
+        );
+
+    if(!client){
+        alert("Client not found.");
+        return;
+    }
+
+    const slug = client.slug || client.id;
+
+    const isGithubPages =
+        window.location.hostname.endsWith("github.io");
+
+    const basePath =
+        isGithubPages
+            ? "/smartlinknfc"
+            : "";
+
+    const url =
+        window.location.origin +
+        basePath +
+        "/" +
+        encodeURIComponent(slug);
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+}
+
+
+/* =========================================================
+   EDIT CLIENT
+========================================================= */
+
+function editClient(id){
+
+    const client =
+        clients.find(
+            function(item){
+
+                return String(item.id) ===
+                    String(id);
+
+            }
+        );
+
+
+    if(!client){
+
+        alert("Client not found.");
+
+        return;
+    }
+
+
+    editingClientId =
+        id;
+
+
+    modalTitle.textContent =
+        "Edit Client";
+
+
+    saveClientButton.textContent =
+        "Update Client";
+
+
+    clientForm.elements["name"].value =
+        client.name || "";
+
+    if(clientForm.elements["slug"]){
+        clientForm.elements["slug"].value =
+            client.slug || "";
+    }
+
+    const existingTheme =
+        normalizeThemeColor(
+            client.theme_color
+        );
+
+    if(themeColor){
+        themeColor.value =
+            existingTheme;
+    }
+
+    if(themeColorHex){
+        themeColorHex.value =
+            existingTheme;
+    }
+
+    updateSelectedThemeColor();
+
+
+    if(galleryPreview){
+
+        galleryPreview.innerHTML = "";
+
+        const existingPhotos =
+            Array.isArray(client.photos)
+                ? client.photos.slice(0,10)
+                : [];
+
+        existingPhotos.forEach(function(url){
+
+            const img =
+                document.createElement("img");
+
+            img.src =
+                url;
+
+            img.alt =
+                "Existing gallery photo";
+
+            img.style.width =
+                "100%";
+
+            img.style.aspectRatio =
+                "1 / 1";
+
+            img.style.objectFit =
+                "cover";
+
+            img.style.borderRadius =
+                "10px";
+
+            galleryPreview.appendChild(img);
+
+        });
+
+    }
+
+
+
+    clientForm.elements["job"].value =
+        client.job || "";
+
+
+    clientForm.elements["company"].value =
+        client.company || "";
+
+
+    clientForm.elements["phone"].value =
+        client.phone || "";
+    clientForm.elements["phone2"].value =
+        client.phone2 || "";
+    clientForm.elements["phone3"].value =
+        client.phone3 || "";
+
+
+    clientForm.elements["whatsapp"].value =
+        client.whatsapp || "";
+    clientForm.elements["whatsapp2"].value =
+        client.whatsapp2 || "";
+    clientForm.elements["whatsapp3"].value =
+        client.whatsapp3 || "";
+
+
+    clientForm.elements["email"].value =
+        client.email || "";
+    clientForm.elements["email2"].value =
+        client.email2 || "";
+    clientForm.elements["email3"].value =
+        client.email3 || "";
+
+
+    clientForm.elements["website"].value =
+        client.website || "";
+
+
+    clientForm.elements["instagram"].value =
+        client.instagram || "";
+
+
+    clientForm.elements["facebook"].value =
+        client.facebook || "";
+
+
+    clientForm.elements["linkedin"].value =
+        client.linkedin || "";
+
+
+    clientForm.elements["tiktok"].value =
+        client.tiktok || "";
+
+
+    clientForm.elements["maps_link"].value =
+        client.maps_link || "";
+    clientForm.elements["maps_label"].value =
+        client.maps_label || "";
+    clientForm.elements["maps_link2"].value =
+        client.maps_link2 || "";
+    clientForm.elements["maps_label2"].value =
+        client.maps_label2 || "";
+    clientForm.elements["maps_link3"].value =
+        client.maps_link3 || "";
+    clientForm.elements["maps_label3"].value =
+        client.maps_label3 || "";
+
+    clientForm.elements["google_reviews_link"].value =
+        client.google_reviews_link || "";
+
+
+    clientForm.elements["about"].value =
+        client.about || "";
+
+
+    resetPreviews();
+
+    hideMessage();
+
+
+    clientModal.style.display =
+        "flex";
+
+}
+
+
+/* =========================================================
+   DELETE CLIENT
+========================================================= */
+
+async function deleteClient(id){
+
+    const client =
+        clients.find(
+            function(item){
+
+                return String(item.id) ===
+                    String(id);
+
+            }
+        );
+
+
+    if(!client){
+
+        alert("Client not found.");
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "Delete " +
+            (client.name || "this client") +
+            "?"
+        );
+
+
+    if(!confirmed){
+
+        return;
+    }
+
+
+    const { error } =
+        await supabaseClient
+            .from("Clients")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
+
+
+    if(error){
+
+        alert(
+            "Error deleting client: " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    await loadClients();
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+searchClient.addEventListener(
+    "input",
+    function(){
+
+        const query =
+            searchClient.value
+                .toLowerCase()
+                .trim();
+
+
+        if(!query){
+
+            renderClients(clients);
+
+            return;
+        }
+
+
+        const filtered =
+            clients.filter(
+                function(client){
+
+                    return (
+
+                        String(
+                            client.name || ""
+                        )
+                        .toLowerCase()
+                        .includes(query)
+
+                        ||
+
+                        String(
+                            client.company || ""
+                        )
+                        .toLowerCase()
+                        .includes(query)
+
+                        ||
+
+                        String(
+                            client.email || ""
+                        )
+                        .toLowerCase()
+                        .includes(query)
+
+                        ||
+
+                        String(
+                            client.phone || ""
+                        )
+                        .toLowerCase()
+                        .includes(query)
+
+                    );
+
+                }
+            );
+
+
+        renderClients(filtered);
+
+    }
+);
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+function showMessage(
+    message,
+    type
+){
+
+    formMessage.textContent =
+        message;
+
+    formMessage.className =
+        "form-message " +
+        type;
+
+}
+
+
+function hideMessage(){
+
+    formMessage.textContent =
+        "";
+
+    formMessage.className =
+        "form-message";
+
+}
+
+
+/* =========================================================
+   SECURITY / HTML
+========================================================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+function escapeAttribute(value){
+
+    return escapeHtml(value);
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+checkSession();
 
 </script>
 
 </body>
-
 </html>
