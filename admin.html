@@ -816,6 +816,18 @@ body {
 
             <div>
 
+                <label>TikTok</label>
+
+                <input
+                    type="text"
+                    name="tiktok"
+                    placeholder="https://www.tiktok.com/@...">
+
+            </div>
+
+
+            <div>
+
                 <label>📍 Google Maps 1</label>
 
                 <input
@@ -2000,6 +2012,9 @@ clientForm.addEventListener(
                 linkedin:
                     formData.get("linkedin")?.trim() || null,
 
+                tiktok:
+                    formData.get("tiktok")?.trim() || null,
+
                 maps_link:
                     formData.get("maps_link")?.trim() || null,
 
@@ -2657,6 +2672,10 @@ function editClient(id){
 
     clientForm.elements["linkedin"].value =
         client.linkedin || "";
+
+
+    clientForm.elements["tiktok"].value =
+        client.tiktok || "";
 
 
     clientForm.elements["maps_link"].value =
