@@ -192,6 +192,34 @@ body{
     text-decoration:none;
 }
 
+/* GOOGLE REVIEWS */
+.google-reviews-card{
+    background:#f7f7f7;
+    border:1px solid #ececec;
+    border-radius:16px;
+    padding:20px;
+    text-align:center;
+}
+.google-reviews-card p{
+    margin:0 0 14px;
+    color:#666;
+    font-size:15px;
+}
+.google-review-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    width:100%;
+    padding:15px 18px;
+    border-radius:12px;
+    background:var(--profile-color,#111111);
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+    font-size:16px;
+}
+
 .footer{
     text-align:center;
     color:#999;
@@ -597,6 +625,28 @@ body{
 
         </div>
 
+        <!-- GOOGLE REVIEWS: shown only when a link exists -->
+        <div
+            class="section hidden"
+            id="googleReviewsSection">
+
+            <h2>Google Reviews</h2>
+
+            <div class="google-reviews-card">
+                <p>Share your experience</p>
+                <a
+                    class="google-review-btn"
+                    id="googleReviewsButton"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="fa-solid fa-star" aria-hidden="true"></i> Review Us
+                </a>
+            </div>
+
+        </div>
+
+
         <!-- LINKS -->
 
         <div
@@ -820,6 +870,12 @@ const whatsappLink3 =
 
 const aboutSection =
     document.getElementById("aboutSection");
+
+const googleReviewsSection =
+    document.getElementById("googleReviewsSection");
+
+const googleReviewsButton =
+    document.getElementById("googleReviewsButton");
 
 const linksSection =
     document.getElementById("linksSection");
@@ -1304,6 +1360,16 @@ function renderProfile(client){
         aboutElement.textContent =
             "Welcome to my digital business card.";
 
+    }
+
+
+    /* GOOGLE REVIEWS — section is visible only when a link is saved */
+    if(client.google_reviews_link){
+        googleReviewsButton.href = validUrl(client.google_reviews_link);
+        googleReviewsSection.classList.remove("hidden");
+    }else{
+        googleReviewsButton.href = "#";
+        googleReviewsSection.classList.add("hidden");
     }
 
 
